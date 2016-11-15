@@ -66,17 +66,21 @@ int main(void)
 	sei();
 	int k; // IR: 1 if obstructed, 0 if nothing, -1 neutral
 	int16_t counter = 0;
-	
-	
+	uint16_t ping, ir, shoot;
+
     while(1)
     {
 		
 		// TESTING AREA			//////////////////////////////
-		
-		
-			
-		
-		
+		ping = adc_read(0);
+		printf("\nPing = %d", ping);
+		//_delay_ms(10);	
+		ir = adc_read(4);
+		printf("        IR = %d", ir);
+		//_delay_ms(10);	
+		shoot = adc_read(6);
+		printf("        Shoot = %d", shoot);
+		//_delay_ms(10);
 		// END TESTING AREA		//////////////////////////////
 		
 		
@@ -96,8 +100,8 @@ int main(void)
 		// Unfinished stuff
 		enc_value = motor_encoder_read();
 		
-		UART_print_char("\n");
-		UART_print_int(enc_value);
+		//UART_print_char("\n");
+		//UART_print_int(enc_value);
     }
 	
 	return 0;

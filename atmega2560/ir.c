@@ -19,7 +19,7 @@ uint8_t ir_obstructed(void){
 	#else
 	static uint16_t filter[FILTER_ORDER-1];
 
-	uint16_t val = adc_read();
+	uint16_t val = adc_read(4);
 	uint16_t avg = val;
 
 	for(uint8_t i = 0; i < FILTER_ORDER-2; i++){

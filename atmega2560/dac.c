@@ -17,15 +17,6 @@ void DAC_write(uint8_t val){
 	TWI_Start_Transceiver_With_Data(msg, 3);
 }
 
-//char read_from_slave(){
-	//
-	//
-	//TWI_Start_Transceiver();
-	//
-	//
-	//TWI_Get_Data_From_Transceiver();
-	//
-//}
 
 
 
