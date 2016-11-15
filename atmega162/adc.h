@@ -19,6 +19,5 @@ typedef struct {
 } joy_position;
 
 void adcRead(ADC_channel ch);
-void interruptInit(void);
 void ADC_debug(void);
 joy_position readJoystick(void);

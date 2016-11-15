@@ -4,7 +4,7 @@
 
 FILE *mystdio;
 
-void UART_Init(unsigned int ubrr) {
+void uart_init(unsigned int ubrr) {
 	// Set baud rate */
 	UBRR0H = (unsigned char)(ubrr>>8);
 	UBRR0L = (unsigned char)ubrr;

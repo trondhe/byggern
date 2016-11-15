@@ -4,6 +4,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "setup.h"
 
 volatile int adcTemp = 0;
 volatile char* adc = 0x1404;
@@ -24,17 +25,6 @@ typedef struct {
 
 void adcRead(ADC_channel ch){
 	*adc = ch;
-	//printf("adc adress = %x\n",adc);
-}
-
-void interruptInit(void){
-	DDRD &= ~(1<<PD3);
-	DDRD &= ~(1<<PD2);
-	GICR |= (1<<INT0) | (1<<INT1);			// Enable INT1 and INT0
-	
-	EMCUCR |= 1<<ISC11 | 1<<ISC01;			// Both trigger inputs at falling edge
-	EMCUCR &= ~(1<<ISC10);
-	EMCUCR &= ~(1<<ISC00);
 }
 
 ISR(INT1_vect)
@@ -52,34 +42,6 @@ uint8_t JoystickY(){
 	adcRead(JOYSTICK_Y);
 	uint8_t y = adcTemp;
 	return y;
-}
-
-void ADC_debug(void){
-	adcRead(JOYSTICK_X);
-	printf("\t\t");
-	printf("JOY_X: %3.0f %%",  (float)adcTemp*0.3921);
-	adcRead(JOYSTICK_Y);
-	printf("\t\t");
-	printf("JOY_Y: %3.0f %%",  (float)adcTemp*0.3921);
-	adcRead(SLIDER_L);
-	printf("\t\t");
-	printf("SLIDER_LEFT: %3.0f %%", (float)adcTemp*0.3921);
-	adcRead(SLIDER_R);
-	printf("\t\t");
-	printf("SLIDER_RIGHT: %3.0f %%",  (float)adcTemp*0.3921);
-	if(PINB & (1<<PB0)){
-		printf("\t");
-		printf("PB0 AKTIV");
-	}
-	if(PINB & (1<<PB1)){
-		printf("\t");
-		printf("PB1 AKTIV");
-	}
-	if(PINB & (1<<PB2)){
-		printf("\t");
-		printf("PB2 AKTIV");
-	}
-	printf("\r\n");
 }
 
 joy_position readJoystick(){
@@ -113,4 +75,38 @@ joy_position readJoystick(){
 	}
 	//printf("%d\n",position.direction);
 	return position;
+}
+
+void ADC_debug(void){
+	adcRead(JOYSTICK_X);
+	printf("\t\t");
+	printf("JOY_X: %3.0f %%",  (float)adcTemp*0.3921);
+	adcRead(JOYSTICK_Y);
+	printf("\t\t");
+	printf("JOY_Y: %3.0f %%",  (float)adcTemp*0.3921);
+	adcRead(SLIDER_L);
+	printf("\t\t");
+	printf("SLIDER_LEFT: %3.0f %%", (float)adcTemp*0.3921);
+	adcRead(SLIDER_R);
+	printf("\t\t");
+	printf("SLIDER_RIGHT: %3.0f %%",  (float)adcTemp*0.3921);
+
+	if(t_bit_l(PINB, PB0)){
+		printf("\t");
+		printf("PB0 AKTIV");
+	} else {
+		printf("\t");
+		printf("PB0 -----");
+	}
+
+	if(t_bit_l(PINB, PB1)){
+		printf("\t");
+		printf("PB1 AKTIV");
+	} else {
+		printf("\t");
+		printf("PB1 -----");
+	}
+
+
+	printf("\r\n");
 }

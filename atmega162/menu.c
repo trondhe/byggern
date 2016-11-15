@@ -1,6 +1,6 @@
 // Created by: Lars-Erik Notevarp Bjørge, Trond Hübertz Emaus, Kristian Husevåg Krohn
 
-// MENU.c: Driver for menu system
+// menu.c: Driver for menu system
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,7 +51,7 @@ node_t* node_init(int num_childs, char* name, node_t* parent, void* action)
 	return node;
 }
 
-node_t* node_menuinit() {
+node_t* node_menu_init() {
 	//NODE TEMPLATE
 	// 	node_t* node_ = node_init(7, "", &node_, functionptr);
 	

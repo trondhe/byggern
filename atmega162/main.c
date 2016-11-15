@@ -5,29 +5,33 @@
 #include <avr/interrupt.h>
 
 // Drivers
+#include "sram.h"
+#include "setup.h"
+#include "fn_init.h"
 #include "can.h"
 #include "uart.h"
 #include "menu.h"
 #include "adc.h"
 #include "oled.h"
 #include "screen.h"
-#include "sram.h"
+
 //#include "buzzer.h"
 //#include "music.h"
 //#include "drawings.h"
 
 
-int main(){
-	
+int main()
+{
 	// Disable global interrupt while init
 	cli();
 	
 	// Init systems
-	SRAM_init();
-	UART_Init(MYUBRR);
-	interruptInit();		// Placed in adc file
-	init_OLED();
-	CAN_init();
+	sram_init();
+	uart_init(MYUBRR);
+	interrupt_init();
+	oled_init();
+	can_init();
+	mfcard_io_init();
 	
 	// Declaration
 	volatile CAN_message_t* CAN_message_recieve = CAN_message_pass2main();
@@ -43,7 +47,7 @@ int main(){
 	BUZZER_play_song();
 	
 	// Menu and screen 
-	node_t* node_current = node_menuinit();
+	node_t* node_current = node_menu_init();
 	char** buffer = screenbuffer_init();
 	int* menuctrl_state = menuctrl_state_pass2main();
 	
@@ -63,10 +67,10 @@ int main(){
 		
 		//ADC_debug();
 		
-		if(PINB & (1<<PB0)){
+		if(t_bit_l(PINB, PB0)){
 			gamestate = 1;
 		}
-		if(PINB & (1<<PB1)){
+		if(t_bit_l(PINB, PB1)){
 			gamestate = 0;
 		}
 		

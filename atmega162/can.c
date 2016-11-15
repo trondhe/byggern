@@ -14,7 +14,7 @@ CAN_message_t* CAN_message_pass2main(){
 	return &CAN_message_recieve;
 }
 
-void CAN_init(){
+void can_init(){
 	McpInit();
 	CAN_bitModify(MCP_RXB0CTRL,0b00000100, 0xFF);			// Rollover disable, mask/filter off			
 	CAN_bitModify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL);		// Loopback mode
