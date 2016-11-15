@@ -7,8 +7,8 @@
 void i2c_init(void);
 char i2c_start(char address);
 char i2c_write(char data);
-
 char i2c_transmit(char address, char* data, uint16_t length);
+unsigned char i2c_read(unsigned char *msg);
 
 void i2c_stop(void);
 

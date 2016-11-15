@@ -76,3 +76,12 @@ void i2c_stop(void)
 	// transmit STOP condition
 	TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWSTO);
 }
+
+unsigned char i2c_read(unsigned char *msg){
+	//
+	//read from slave
+	unsigned char c;
+	TWI_Start_Transceiver_With_Data(0x10, 1);
+	c = TWI_Get_Data_From_Transceiver(*msg, 1);
+	return c;
+}
