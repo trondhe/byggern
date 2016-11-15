@@ -74,13 +74,13 @@ int main(void)
 		// TESTING AREA			//////////////////////////////
 		ping = adc_read(0);
 		printf("\nPing = %d", ping);
-		_delay_ms(10);	
+		//_delay_ms(10);	
 		ir = adc_read(4);
 		printf("        IR = %d", ir);
-		_delay_ms(10);	
+		//_delay_ms(10);	
 		shoot = adc_read(6);
 		printf("        Shoot = %d", shoot);
-		_delay_ms(10);
+		//_delay_ms(10);
 		// END TESTING AREA		//////////////////////////////
 		
 		
