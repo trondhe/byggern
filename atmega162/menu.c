@@ -10,6 +10,9 @@
 
 // TESTING IN PROGRESS	///////////////////////////////////////////////
 
+
+
+
 void testfunction_print(){
 	printf("\n\nPENIS ON THE SCREEN\n\n");
 }
@@ -21,7 +24,7 @@ static int menuctrl_hold = 0;
 static joy_position menuctrl;
 
 
-int* menuctrl_state_pass2main(){
+int* menuctrl_state_passPtr(){
 	return &menuctrl_state;
 }
 

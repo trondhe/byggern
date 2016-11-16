@@ -32,9 +32,10 @@ int main()
 	oled_init();
 	can_init();
 	mfcard_io_init();
+	menuctrl_state_init();
 	
 	// Declaration
-	volatile CAN_message_t* CAN_message_recieve = CAN_message_pass2main();
+	volatile CAN_message_t* CAN_message_recieve = CAN_message_passPtr();
 	CAN_message_t CAN_message_send;
 	CAN_message_send.id = 1;
 	CAN_message_send.length = 8;
@@ -49,8 +50,8 @@ int main()
 	// Menu and screen 
 	node_t* node_current = node_menu_init();
 	char** buffer = screenbuffer_init();
-	int* menuctrl_state = menuctrl_state_pass2main();
-	
+	//int* menuctrl_state = menuctrl_state_passValue();
+
 	// Joystick 
 	joy_position position;
 	
@@ -76,7 +77,7 @@ int main()
 		
 		if(gamestate == 0){
 			menu_nav(&node_current);
-			buffer_writemenu(buffer, &node_current, menuctrl_state);
+			buffer_writemenu(buffer, &node_current);
 		} else {
 			shoot = (PINB & (1<<PB0));
 			buffer_writegame(buffer);
