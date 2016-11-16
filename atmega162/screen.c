@@ -2,21 +2,22 @@
 
 // screen.c: Driver for screen output buffer
 
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "oled.h"
 #include "menu.h"
 #include "screen.h"
 #include "adc.h"
 
-static int* menuctrl_state;
 
-void menuctrl_state_init(){
-	menuctrl_state = menuctrl_state_passPtr();
+static int* menu_ctrl_state;
+
+void menu_ctrl_state_init(){
+	menu_ctrl_state = menu_state_ctrl_get();
 }
 
-char** screenbuffer_init() {
+char** screen_buffer_init() {
 	
 	char** buffer = (char**)malloc(sizeof(char*) * 8);
 	if (buffer == NULL) {
@@ -41,7 +42,7 @@ char** screenbuffer_init() {
 }
 
 
-void buffer_writemenu(char** buffer, node_t** node_current){
+void screen_buffer_writemenu(char** buffer, node_t** node_current){
 
 	// Screen clear
 	for (int i = 0; i < 8; i++) {
@@ -78,20 +79,24 @@ void buffer_writemenu(char** buffer, node_t** node_current){
 
 	// Write guide arrow
 	for (int i = 1; i < 8; i++) {
-		if (i == *menuctrl_state + 1)
+		if (i == *menu_ctrl_state + 1)
 		{
 			buffer[i][0] = 45;
 		}
 		else {
 			buffer[i][0] = 32;
 		}
+
+	OLED_print_buffer(buffer);
 	}
 }
 
-void buffer_writegame(char** buffer){
+void screen_buffer_writegame(char** buffer){
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 16; j++) {
 			buffer[i][j] = 35;
 		}
 	}
+
+	OLED_print_buffer(buffer);
 }

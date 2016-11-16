@@ -12,7 +12,7 @@ typedef enum{
 	SLIDER_R    = 7
 } ADC_channel;
 
-typedef struct {
+typedef struct joy_position{
 	int x;
 	int y;
 	int direction;

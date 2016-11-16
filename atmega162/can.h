@@ -12,7 +12,7 @@ typedef struct CAN_message_t{
 	int8_t data[8];
 } CAN_message_t;
 
-CAN_message_t* CAN_message_passPtr(void);
+CAN_message_t* CAN_message_recieve_get(void);
 void can_init(void);
 void CAN_byte_send(CAN_message_t* message);
 int CAN_error(void);

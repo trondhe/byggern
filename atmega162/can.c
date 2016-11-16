@@ -10,7 +10,7 @@
 
 volatile CAN_message_t CAN_message_recieve;
 
-CAN_message_t* CAN_message_passPtr(){
+CAN_message_t* CAN_message_recieve_get(){
 	return &CAN_message_recieve;
 }
 
