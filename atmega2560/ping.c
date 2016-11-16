@@ -1,8 +1,5 @@
-
-long duration, cm;
-
-
- long duration, inches, cm;
+/*
+ long duration, cm;
 
  // The PING))) is triggered by a HIGH pulse of 2 or more microseconds.
  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
@@ -38,3 +35,4 @@ long duration, cm;
 	 // object we take half of the distance travelled.
 	 return microseconds / 29 / 2;
  }
+ */

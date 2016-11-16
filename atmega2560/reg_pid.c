@@ -5,10 +5,10 @@
  *  Author: Kristian
  */ 
 
-
+/*
 
  #include <avr/io.h>
- #include "pi_control.h"
+ #include "reg_pid.h"
 
  int pi_control(struct PIcontrol *p, int e){
 	int int_ok;
@@ -47,3 +47,5 @@
 
 	p->i = 0L;
  }
+ 
+ */
