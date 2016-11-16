@@ -2,12 +2,19 @@
 
 // screen.c: Driver for screen output buffer
 
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "menu.h"
 #include "screen.h"
 #include "adc.h"
+
+static int* menuctrl_state;
+
+void menuctrl_state_init(){
+	menuctrl_state = menuctrl_state_passPtr();
+}
 
 char** screenbuffer_init() {
 	
@@ -34,8 +41,8 @@ char** screenbuffer_init() {
 }
 
 
-void buffer_writemenu(char** buffer, node_t** node_current, int* menuctrl_state){
-	
+void buffer_writemenu(char** buffer, node_t** node_current){
+
 	// Screen clear
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 16; j++) {
