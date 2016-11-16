@@ -173,12 +173,6 @@
     <Compile Include="motor.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="pi_controller.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="pi_controller.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="reg_pid.c">
       <SubType>compile</SubType>
     </Compile>

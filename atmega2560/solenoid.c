@@ -17,3 +17,26 @@ void solenoid_trigger(int trigger){
 		PORTL |= (1 << PL0);
 	}
 }
+
+void solenoid_toggle(){
+	PORTL &=~(1 << PL0);
+	_delay_ms(50);
+	PORTL |= (1 << PL0);
+	_delay_ms(50);
+}
+
+void solenoid_burst(){
+	PORTL &=~(1 << PL0);
+	_delay_ms(50);
+	PORTL |= (1 << PL0);
+	_delay_ms(50);
+	PORTL &=~(1 << PL0);
+	_delay_ms(50);
+	PORTL |= (1 << PL0);
+	_delay_ms(50);
+	PORTL &=~(1 << PL0);
+	_delay_ms(50);
+	PORTL |= (1 << PL0);
+	_delay_ms(50);
+	
+}

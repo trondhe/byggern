@@ -17,10 +17,10 @@ struct PI_control{
 	int max;
 	int min;
 	long i;
-};
+} PI_control;
 
 
-pi_control(struct PIcontrol *p, int e);
-void pi_control_init(struct PIcontrol *p);
+void pi_control(PI_control *p, int e);
+PI_control* pi_control_init();
 
 #endif /* PI_H_ */

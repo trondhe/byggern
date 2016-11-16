@@ -5,12 +5,25 @@
  *  Author: Kristian
  */ 
 
-/*
+
 
  #include <avr/io.h>
  #include "reg_pid.h"
+ 
+ PI_control* pi_control_init(){
+	 PI_control* p = malloc (sizeof(PI_control));
+	 p->kp = 1;
+	 p->ti = 10;
+	 p->shift = 1;
+	 p->max = 255;
+	 p->min = 0;
+	 p->i = 0L;
+	 
+	 return p;
+ }
+ 
 
- int pi_control(struct PIcontrol *p, int e){
+long pi_control(struct PI_control *p, int e){
 	int int_ok;
 	long new_i;
 	long u;
@@ -41,11 +54,7 @@
 	if (int_ok == 1){
 		p->i = new_i;
 	}
+	
+	return (int8_t)u;
  }
 
- void pi_control_init(struct PIcontrol *p){
-
-	p->i = 0L;
- }
- 
- */
