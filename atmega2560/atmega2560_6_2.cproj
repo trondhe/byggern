@@ -152,12 +152,6 @@
     <Compile Include="dac.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="i2c.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="i2c.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="ir.c">
       <SubType>compile</SubType>
     </Compile>
@@ -191,9 +185,6 @@
     <Compile Include="reg_pid.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="ping.c">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="servo.c">
       <SubType>compile</SubType>
     </Compile>
@@ -207,12 +198,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="solenoid.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="sonar.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="sonar.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="spi.c">
