@@ -60,7 +60,7 @@ int main(void)
 	CAN_message_t* CAN_message_recieve = CAN_message_pass2main();
 	CAN_message_t CAN_message_send;
 	CAN_message_send.id = 2;
-	CAN_message_send.length = 3;
+	CAN_message_send.length = 8;
 	PID_control* p = pid_control_init();
 	
 	
@@ -70,8 +70,11 @@ int main(void)
 	// testing variables
 	int k; // IR: 1 if obstructed, 0 if nothing, -1 neutral
 	int16_t counter = 0;
-	uint16_t ping, ir, shoot;
+	uint16_t ir, shoot;
 	int8_t mode;
+	int8_t options;
+	int8_t sol;
+	int8_t x_pos;
 	int16_t r; // Referanse
 	int16_t y;
 	int16_t ping_pos_left;
@@ -80,35 +83,45 @@ int main(void)
 	int calibration_stage = 0;
 
 	int8_t u; // Pådrag
-	CAN_message_recieve->data[0] = -1;
+	long ping;
+
 	
     while(1)
     {
-	
-		//printf("%d\n",CAN_message_recieve->data[0]);
-		//UART_print_char("penis");
-		//printf("Penis\n");
+		//debug();
 		// TESTING AREA			//////////////////////////////
-		ping = adc_read(0);
-		//printf("\nPing = %d", ping);
-		ir = adc_read(4);
-		//printf("        IR = %d", ir);
-		shoot = adc_read(6);
-		//printf("        Shoot = %d", shoot);
+
 		// END TESTING AREA		//////////////////////////////
+		if(CAN_message_recieve->id == 1)
+		{
+			printf("Message with id 1 received\n");
+			ping |= (CAN_message_recieve->data[0] << 24);
+			ping |= (CAN_message_recieve->data[1] << 16);
+			ping |= (CAN_message_recieve->data[2] << 8);
+			ping |= CAN_message_recieve->data[3];
+			printf("%ld\n",ping);
+		}
 		
-		
-		printf("penis\n");
-		game = CAN_message_recieve->data[3];
-		mode = CAN_message_recieve->data[3];		// Receive mode from CAN
-		mode = 1;
-		printf("x: %d\t",CAN_message_recieve->data[0]);
-		printf("sol: %d\n",CAN_message_recieve->data[2]);
+		else if(CAN_message_recieve->id == 2)
+		{	
+			printf("Message with id 2 received\n");
+			mode = CAN_message_recieve->data[3];				// Receive mode byte from CAN
+			options = CAN_message_recieve->data[4];				// Receive options byte from CAN
+			sol = CAN_message_recieve->data[2];
+			x_pos = CAN_message_recieve->data[0];
+		}
+
+		else
+		{
+			printf("CAN message with unknown id:%d \n",CAN_message_recieve->id);	
+		}
+
+
 		_delay_ms(50);
 		
 		switch(mode){
 			case 0:		// MENU
-			printf("Menu is active\n");
+				printf("Menu is active\n");
 			break;
 			
 			case 1:		// CALIBRATION
@@ -144,22 +157,22 @@ int main(void)
 			
 			case 2:		// GAME MODE
 			
-				switch(mode){
-
+				switch(options){
+// 
 					case 0:		// Joystick movements with single-shot
-						solenoid_trigger(CAN_message_recieve->data[2]);	// Control solenoid
-						motor_control(CAN_message_recieve->data[0]);	// Control Position motor
-						servo_set_angle(CAN_message_recieve->data[0]);	// Control Servo motor
+						solenoid_trigger(sol);	// Control solenoid
+						motor_control(x_pos);	// Control Position motor
+						servo_set_angle(x_pos);	// Control Servo motor
 						break;
 				
 					case 1:		// Joystick movements with automatic
-						solenoid_toggle(CAN_message_recieve->data[2]);	// Control solenoid
-						motor_control(CAN_message_recieve->data[0]);	// Control Position motor
-						servo_set_angle(CAN_message_recieve->data[0]);	// Control Servo motor
+						solenoid_toggle(sol);	// Control solenoid
+						motor_control(x_pos);	// Control Position motor
+						servo_set_angle(x_pos);	// Control Servo motor
 						break;
 				
 					case 2:		// PID movements with single-shot
-						solenoid_trigger(CAN_message_recieve->data[2]);	// Control solenoid
+						solenoid_trigger(sol);	// Control solenoid
 						r = adc_read(0);
 						y = (motor_encoder_read()>> 3);	//Scale down from 32768 to 255
 						u = pid_control(p, r, y);
@@ -168,7 +181,7 @@ int main(void)
 						break;
 				
 					case 3:		// PID movements with automatic
-						solenoid_toggle(CAN_message_recieve->data[2]);	// Control solenoid
+						solenoid_toggle(sol);	// Control solenoid
 						r = adc_read(0);
 						y = (motor_encoder_read()>> 3);	//Scale down from 32768 to 255
 						u = pid_control(p, r, y);
@@ -186,11 +199,14 @@ int main(void)
 		
 		// Unfinished stuff
 		enc_value = motor_encoder_read();
-		
-		//UART_print_char("\n");
-		//UART_print_int(enc_value);
-		//printf("%d\n", enc_value);
+
     }
 	
 	return 0;
+}
+
+void debug(){
+		printf("\nPing = %d", adc_read(0));
+		printf("\nIR = %d", adc_read(4));
+		printf("\nShoot = %d", adc_read(6));
 }
