@@ -9,7 +9,7 @@
 
 	void CAN_messages_init(){
 		CAN_message_recieve = CAN_message_recieve_get();
-		CAN_message_send = CAN_message_init(1, 3);
+		CAN_message_send = CAN_message_init(2, 8);
 	}
 
 

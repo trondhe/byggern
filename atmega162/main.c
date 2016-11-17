@@ -14,6 +14,7 @@
 #include "adc.h"
 #include "oled.h"
 #include "screen.h"
+#include "system_logic.h"
 
 //#include "buzzer.h"
 //#include "music.h"
@@ -46,6 +47,7 @@ int main()
 	sei();
 	
 	while(1){
+	
 		//ADC_debug();
 		system_loop();
 	}

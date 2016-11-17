@@ -33,29 +33,24 @@ void system_loop() {
 	// Joystick position update
 	joy_pos = readJoystick();
 
+	if(t_bit_l(PINB, PB0)){
+		gamestate = 1;
+	}
+	if(t_bit_l(PINB, PB1)){
+		gamestate = 0;
+	}
+
+	if(gamestate == 0){
+		menu_nav(&node_current, &joy_pos);
+		screen_buffer_writemenu(buffer, &node_current);
+		} else {
+		shoot = (PINB & (1<<PB0));
+		screen_buffer_writegame(buffer);
 		CAN_data[0] = joy_pos.x;
 		CAN_data[1] = joy_pos.y;
 		CAN_data[2] = shoot;
 		CAN_message_transmit(CAN_data);
-
-	//if(t_bit_l(PINB, PB0)){
-		//gamestate = 1;
-	//}
-	//if(t_bit_l(PINB, PB1)){
-		//gamestate = 0;
-	//}
-//
-	//if(gamestate == 0){
-		//menu_nav(&node_current, &joy_pos);
-		//screen_buffer_writemenu(buffer, &node_current);
-		//} else {
-		//shoot = (PINB & (1<<PB0));
-		//screen_buffer_writegame(buffer);
-		//CAN_data[0] = joy_pos.x;
-		//CAN_data[1] = joy_pos.y;
-		//CAN_data[2] = shoot;
-		//CAN_message_transmit(CAN_data);
-		//
-	//}
+		
+	}
 
 }

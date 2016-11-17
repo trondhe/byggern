@@ -24,7 +24,7 @@ CAN_message_t* CAN_message_init(int id, uint8_t length) {
 	msg->length = length;
 	msg->data = malloc(sizeof(int) * length);
 	for (int i = 0; i < length; i++) {
-		msg->data[i] = NULL;
+		msg->data[i] = 0;
 	}
 	return msg;
 }
