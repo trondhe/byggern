@@ -98,11 +98,12 @@ int main(void)
 		// END TESTING AREA		//////////////////////////////
 		
 		
-		
+		printf("penis\n");
 		mode = CAN_message_recieve->data[3];		// Receive mode from CAN
 		mode = 3;
-		//printf("HER:::: %d\n",CAN_message_recieve->data[1]);
-		
+		printf("x: %d\t",CAN_message_recieve->data[0]);
+		printf("sol: %d\n",CAN_message_recieve->data[2]);
+		_delay_ms(50);
 		
 		switch(mode){
 			case 0:		// Menu active
@@ -111,7 +112,7 @@ int main(void)
 				break; 
 			
 			case 1:		// Joystick
-				
+				printf("\n");
 				motor_control(CAN_message_recieve->data[0]);	// Control Position motor
 				servo_set_angle(CAN_message_recieve->data[0]);	// Control Servo motor
 				solenoid_trigger(CAN_message_recieve->data[2]);	// Control solenoid		
@@ -139,7 +140,7 @@ int main(void)
 			
 			if(adc_read(6) < 860)
 				{
-					printf("%d\n",adc_read(6));
+					printf("penis");
 					solenoid_trigger(1);		// Single shot
 				}
 			else
@@ -157,6 +158,7 @@ int main(void)
 			
 				if(adc_read(6) < 860 && calibration_stage == 0)
 				{
+					solenoid_trigger(1);
 					ping_pos_left = adc_read(0);
 					calibration_stage = 1;
 					_delay_ms(1000);
@@ -164,6 +166,7 @@ int main(void)
 				
 				if(adc_read(6) < 860 && calibration_stage == 1)
 				{
+					solenoid_trigger(1);
 					ping_pos_right = adc_read(0);
 					calibration_stage = 2;
 					_delay_ms(1000);
@@ -171,6 +174,7 @@ int main(void)
 				
 				if(adc_read(6) < 860 && calibration_stage == 2)
 				{
+					solenoid_trigger(1);
 					ping_pos_over_motor = adc_read(0);
 					calibration_stage = 0;
 					_delay_ms(1000);
