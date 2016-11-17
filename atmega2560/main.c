@@ -79,6 +79,7 @@ int main(void)
 	
     while(1)
     {
+	
 		//printf("%d\n",CAN_message_recieve->data[0]);
 		//UART_print_char("penis");
 		//printf("Penis\n");
@@ -160,7 +161,7 @@ int main(void)
 		enc_value = motor_encoder_read();
 		
 		//UART_print_char("\n");
-		//UART_print_int(enc_value);
+		UART_print_int(enc_value);
     }
 	
 	return 0;

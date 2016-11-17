@@ -30,8 +30,8 @@
 
 int8_t pid_control(PID_control *p, int16_t r,  int16_t y){
 	
-	float uPIk = 0.0;
-	float uDk = 0.0;
+	float uPIk;
+	float uDk;
 	float yk;
 	float u;
 	float ek;
@@ -43,8 +43,8 @@ int8_t pid_control(PID_control *p, int16_t r,  int16_t y){
 	//_delay_ms(100);
 	//printf("Steglengde = %5.6f \t", p->h);
 	yk = (float)y;
-	printf("Floatmåling = %d\t", y);
-	printf("Floatmåling = %7.6f\n", yk);
+	//printf("Floatmåling = %d\t", y);
+	//printf("Floatmåling = %7.6f\n", yk);
 	ek =(float)(r - y);
 	//printf("reguleringsavvik = %.6f\t", ek);
 	
