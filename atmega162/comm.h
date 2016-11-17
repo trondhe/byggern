@@ -1,3 +1,3 @@
 #pragma once
 
-void CAN_message_recieve_init();
+void CAN_message_init();

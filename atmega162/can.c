@@ -7,11 +7,23 @@
 #include <avr/delay.h>
 #include "mcp.h"
 #include "can.h"
+#include "setup.h"
 
 volatile CAN_message_t CAN_message_recieve;
 
 CAN_message_t* CAN_message_recieve_get(){
 	return &CAN_message_recieve;
+}
+
+CAN_message_t* CAN_message_send_init(int id, int length) {
+	CAN_message_t* msg = malloc(sizeof(CAN_message_t));
+	msg->id = id;
+	msg->length = length;
+	msg->data = malloc(sizeof(int) * length);
+	for (int i = 0; i < length; i++) {
+		msg->data[i] = NULL;
+	}
+	return msg;
 }
 
 void can_init(){
@@ -25,10 +37,10 @@ int CAN_error(void) {
 	uint8_t error = CAN_read(MCP_TXB0CTRL);
 	
 	//Transmission error detected
-	if (test_bit(error, 4)) return -1;
+	if (t_bit_h(error, 4)) return -1;
 	
 	//Message lost arbitration
-	if (test_bit(error, 5)) return -2;
+	if (t_bit_h(error, 5)) return -2;
 	
 	return 0;
 }

@@ -24,7 +24,7 @@ void system_logic_vars_init(){
 	node_current = menu_nodelist_init();
 	buffer = screen_buffer_init();
 	menu_ctrl_state_init();
-	CAN_message_recieve_init();
+	CAN_message_init();
 }
 
 void system_loop() {
