@@ -24,7 +24,7 @@ typedef struct PID_control{
 } PID_control;
 
 
-int8_t pid_control(PID_control *p, int r, int y);
+int8_t pid_control(PID_control *p, int16_t r, int16_t y);
 PID_control* pid_control_init();
 
 #endif /* PI_H_ */

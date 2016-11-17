@@ -70,9 +70,9 @@ int main(void)
 	int16_t counter = 0;
 	uint16_t ping, ir, shoot;
 	int8_t mode;
-	uint16_t r; // Referanse
-	uint16_t y;
-	uint16_t e; // Reguleringsavvik;
+	int16_t r; // Referanse
+	int16_t y;
+	//uint16_t e; // Reguleringsavvik;
 	int8_t u; // Pådrag
 	PID_control* p = pid_control_init();
 	
@@ -80,17 +80,22 @@ int main(void)
     while(1)
     {
 		
+		UART_print_char("penis");
+		printf("Penis");
 		// TESTING AREA			//////////////////////////////
 		ping = adc_read(0);
-		printf("\nPing = %d", ping);
+		//printf("\nPing = %d", ping);
 		ir = adc_read(4);
-		printf("        IR = %d", ir);
+		//printf("        IR = %d", ir);
 		shoot = adc_read(6);
-		printf("        Shoot = %d", shoot);
+		//printf("        Shoot = %d", shoot);
 		// END TESTING AREA		//////////////////////////////
 		
+		
+		
 		mode = CAN_message_recieve->data[3];		// Receive mode from CAN
-		mode = 2;
+		mode = 1;
+		//printf("%d\n",CAN_message_recieve->data[0]);
 		
 		switch(mode){
 			case 0:		// Menu active
@@ -99,7 +104,7 @@ int main(void)
 				break;
 			
 			case 1:		// Joystick
-			
+				
 				motor_control(CAN_message_recieve->data[0]);	// Control Position motor
 				servo_set_angle(CAN_message_recieve->data[0]);	// Control Servo motor
 				solenoid_trigger(CAN_message_recieve->data[2]);	// Control solenoid		
@@ -107,14 +112,14 @@ int main(void)
 			
 			case 2:		// Guns N' Roses mode with automatic
 				r = adc_read(0);
-				y = (motor_encoder_read() >> 7);	//Scale down from 32768 to 255
+				y = (motor_encoder_read()>> 3);	//Scale down from 32768 to 255
 
 				u = pid_control(p, r, y);
-				printf("Pådrag = %d", u);
+				//printf("ref = %d  Målt: %d\t", r,y);
 				motor_control (u);
-				
+				//printf("Pådrag = %d\n", u);
 				if(adc_read(6) < 860){
-					printf("SKYT!");
+					//printf("SKYT!");
 					solenoid_toggle();			// Machine gun
 				}
 			
@@ -127,7 +132,7 @@ int main(void)
 			
 			if(adc_read(6) < 860)
 			{
-				printf("SKYT!");
+				//printf("SKYT!");
 				solenoid_trigger(1);		// Single shot
 			}
 			else
