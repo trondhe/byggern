@@ -66,6 +66,7 @@ int main(void)
 	
 	// Enable global interrupt
 	sei();
+	
 	// testing variables
 	int k; // IR: 1 if obstructed, 0 if nothing, -1 neutral
 	int16_t counter = 0;
@@ -73,7 +74,11 @@ int main(void)
 	int8_t mode;
 	int16_t r; // Referanse
 	int16_t y;
-	//uint16_t e; // Reguleringsavvik;
+	int16_t ping_pos_left;
+	int16_t ping_pos_right;
+	int16_t ping_pos_over_motor;
+	int calibration_stage = 0;
+
 	int8_t u; // Pådrag
 	CAN_message_recieve->data[0] = -1;
 	
@@ -95,7 +100,7 @@ int main(void)
 		
 		
 		mode = CAN_message_recieve->data[3];		// Receive mode from CAN
-		mode = 2;
+		mode = 3;
 		//printf("HER:::: %d\n",CAN_message_recieve->data[1]);
 		
 		
@@ -103,7 +108,7 @@ int main(void)
 			case 0:		// Menu active
 				
 				printf("Menu is active\n");		
-				break;
+				break; 
 			
 			case 1:		// Joystick
 				
@@ -133,20 +138,49 @@ int main(void)
 			case 3:		// Guns N' Roses mode with semi-automatic
 			
 			if(adc_read(6) < 860)
-			{
-				//printf("SKYT!");
-				solenoid_trigger(1);		// Single shot
-			}
+				{
+					printf("%d\n",adc_read(6));
+					solenoid_trigger(1);		// Single shot
+				}
 			else
-			{
-				solenoid_trigger(0);
-			}
+				{
+					solenoid_trigger(0);
+				}
 			
 			break;
 			
 			case 4: // Guns N' Roses mode with burst
 			
 			break;
+			
+			case 5: // Calibration
+			
+				if(adc_read(6) < 860 && calibration_stage == 0)
+				{
+					ping_pos_left = adc_read(0);
+					calibration_stage = 1;
+					_delay_ms(1000);
+				}
+				
+				if(adc_read(6) < 860 && calibration_stage == 1)
+				{
+					ping_pos_right = adc_read(0);
+					calibration_stage = 2;
+					_delay_ms(1000);
+				}
+				
+				if(adc_read(6) < 860 && calibration_stage == 2)
+				{
+					ping_pos_over_motor = adc_read(0);
+					calibration_stage = 0;
+					_delay_ms(1000);
+				}
+				
+				printf("Min: %d\t",ping_pos_left);
+				printf("Max: %d\t",ping_pos_right);
+				printf("Motor: %d\n",ping_pos_over_motor);
+			
+			break;			
 			
 			
 		}
@@ -161,7 +195,8 @@ int main(void)
 		enc_value = motor_encoder_read();
 		
 		//UART_print_char("\n");
-		UART_print_int(enc_value);
+		//UART_print_int(enc_value);
+		//printf("%d\n", enc_value);
     }
 	
 	return 0;
