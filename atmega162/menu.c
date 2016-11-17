@@ -7,14 +7,30 @@
 #include <string.h>
 #include "menu.h"
 #include "adc.h"
+#include "system_logic.h"
+#include "setup.h"
 
 static int menu_ctrl_state = 0;
 static int menu_ctrl_hold = 0;
+sys_val_t* sys_val = NULL;
 
+void menu_vals_init(){
+	sys_val = sys_vals_get();
+}
 // TESTING IN PROGRESS	///////////////////////////////////////////////
 
-void testfunction_print(){
-	printf("\n\nTESTPRINT\n\n");
+void play_gunmode() {
+	if (sys_val->is_calibrated == 0) { // Checks if system is calibrated
+		sys_val->gamemode = 1; // Set calibration mode
+	} else {
+		sys_val->gamemode = 2; // Set game mode
+		c_bit(sys_val->settings, SETT_JOY_GUN);
+	}
+}
+
+void play_joymode() {
+	sys_val->gamemode = 2;
+
 }
 
 //		END TESTING		///////////////////////////////////////////////
@@ -61,11 +77,11 @@ node_t* menu_nodelist_init() {
 
 	// CHILD NODES,	CHILD OF CHILD, ...
 	node_t* node_play = menu_node_init(2, "Play", node_mthr, NULL);
-	node_t* node_norm = menu_node_init(0, "Normal", node_play, &testfunction_print);
-	node_t* node_hard = menu_node_init(0, "Hard", node_play, NULL);
+	node_t* node_gun = menu_node_init(0, "Gun", node_play, &play_gunmode);
+	node_t* node_joy = menu_node_init(0, "Joystick", node_play, &play_joymode);
 
 	node_t* node_sett = menu_node_init(2, "Settings", node_mthr, NULL);
-	node_t* node_tuni = menu_node_init(0, "Tuning", node_sett, NULL);
+	node_t* node_tuni = menu_node_init(0, "Calibrate gun", node_sett, NULL);
 	node_t* node_dead = menu_node_init(0, "Deadzone", node_sett, NULL);
 	
 	return node_mthr;

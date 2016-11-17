@@ -12,28 +12,23 @@
 #include "can.h"
 #include "setup.h"
 
-volatile CAN_message_t CAN_message_recieve;
+CAN_message_t CAN_message_recieve;
+CAN_message_t CAN_message_send;
 
-CAN_message_t* CAN_message_recieve_get(){
-	return &CAN_message_recieve;
-}
-
-CAN_message_t* CAN_message_init(int id, uint8_t length) {
-	CAN_message_t* msg = malloc(sizeof(CAN_message_t));
-	msg->id = id;
-	msg->length = length;
-	msg->data = malloc(sizeof(int) * length);
-	for (int i = 0; i < length; i++) {
-		msg->data[i] = 0;
+void CAN_message_transmitt(int* data){
+	for(int i = 0; i < CAN_message_send.length; i++) {
+		CAN_message_send.data[i] = data[i];
 	}
-	return msg;
+	CAN_byte_send(&CAN_message_send);
 }
 
-void can_init(){
+void CAN_init(){
 	McpInit();
 	CAN_bitModify(MCP_RXB0CTRL,0b00000100, 0xFF);			// Rollover disable, mask/filter off			
 	CAN_bitModify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL);		// Loopback mode
 	CAN_bitModify(MCP_CANINTE, 0x01, 1);					// Enable interrupt
+	CAN_message_send.id = 2;
+	CAN_message_send.length = 8;
 }
 
 int CAN_error(void) {

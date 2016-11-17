@@ -1,6 +1,4 @@
-# pragma once
-
-#define F_CPU 4915200
+#pragma once
 
 //Added from the project description to help setting bits in registers
 #define s_bit(reg,bit) (reg |= (1 << bit))

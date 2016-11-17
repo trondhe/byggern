@@ -4,7 +4,8 @@
 #include "uart.h"
 #include "menu.h"
 
-char** screen_buffer_init();
-void screen_buffer_writemenu(char** buffer, node_t** node_current);
-void screen_buffer_writegame(char** buffer);
-void menu_ctrl_state_init();
+void screen_buffer_init();
+void screen_buffer_writemenu(node_t** node_current);
+void screen_buffer_writegame();
+void write_center_text(char* text, int on_line, int if_fill, int fill);
+void screen_vals_init();
