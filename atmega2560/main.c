@@ -61,6 +61,7 @@ int main(void)
 	CAN_message_t CAN_message_send;
 	CAN_message_send.id = 2;
 	CAN_message_send.length = 3;
+	PID_control* p = pid_control_init();
 	
 	
 	// Enable global interrupt
@@ -74,14 +75,13 @@ int main(void)
 	int16_t y;
 	//uint16_t e; // Reguleringsavvik;
 	int8_t u; // Pådrag
-	PID_control* p = pid_control_init();
 	CAN_message_recieve->data[0] = -1;
 	
     while(1)
     {
 		//printf("%d\n",CAN_message_recieve->data[0]);
 		//UART_print_char("penis");
-		printf("Penis\n");
+		//printf("Penis\n");
 		// TESTING AREA			//////////////////////////////
 		ping = adc_read(0);
 		//printf("\nPing = %d", ping);
@@ -95,6 +95,7 @@ int main(void)
 		
 		mode = CAN_message_recieve->data[3];		// Receive mode from CAN
 		mode = 2;
+		//printf("HER:::: %d\n",CAN_message_recieve->data[1]);
 		
 		
 		switch(mode){

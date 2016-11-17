@@ -35,16 +35,18 @@ int8_t pid_control(PID_control *p, int16_t r,  int16_t y){
 	float yk;
 	float u;
 	float ek;
-	
-	p->h=(float)(acquire_time()*1024/16000000);
+	//printf("%d\n",acquire_time());
+	//printf("pådrag = %.6f\t", uDk);
+	p->h=((float)acquire_time()/15625.0);
+	//printf("pådrag = %.6f\n", p->h);
 	reset_timer();
-	_delay_ms(100);
+	//_delay_ms(100);
 	//printf("Steglengde = %5.6f \t", p->h);
 	yk = (float)y;
 	printf("Floatmåling = %d\t", y);
-	printf("Floatmåling = %7.6f\t", yk);
+	printf("Floatmåling = %7.6f\n", yk);
 	ek =(float)(r - y);
-	printf("reguleringsavvik = %.6f\t", ek);
+	//printf("reguleringsavvik = %.6f\t", ek);
 	
 	uPIk = p->uPIk_1 + (p->kp *(1 + (p->h/p->ti)) * ek) - p->ek_1; // PI med windup
 	
@@ -57,9 +59,9 @@ int8_t pid_control(PID_control *p, int16_t r,  int16_t y){
 	}
 	//printf("PI pådrag = %.6f\t", uPIk);
 	uDk = p->kp * (p->td/p->h) * (yk - p->yk_1); // Derivator
-	
+	//printf("h = %.6f\t", p->h);
 	u = uPIk - uDk;
-	printf("pådrag = %.6f\t", uDk);
+	//printf("pådrag = %.6f\t", uPIk);
 	if (u > p->max){
 		u = p->max;
 	}
