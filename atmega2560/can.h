@@ -9,7 +9,7 @@
 typedef struct CAN_message_t{
 	int id;
 	uint8_t length;
-	int8_t data[8];
+	int8_t data[3];
 } CAN_message_t;
 
 CAN_message_t* CAN_message_pass2main(void);

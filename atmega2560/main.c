@@ -60,7 +60,7 @@ int main(void)
 	CAN_message_t* CAN_message_recieve = CAN_message_pass2main();
 	CAN_message_t CAN_message_send;
 	CAN_message_send.id = 2;
-	CAN_message_send.length = 8;
+	CAN_message_send.length = 3;
 	
 	
 	// Enable global interrupt
@@ -75,13 +75,13 @@ int main(void)
 	//uint16_t e; // Reguleringsavvik;
 	int8_t u; // Pådrag
 	PID_control* p = pid_control_init();
-	
+	CAN_message_recieve->data[0] = -1;
 	
     while(1)
     {
-		
-		UART_print_char("penis");
-		printf("Penis");
+		//printf("%d\n",CAN_message_recieve->data[0]);
+		//UART_print_char("penis");
+		printf("Penis\n");
 		// TESTING AREA			//////////////////////////////
 		ping = adc_read(0);
 		//printf("\nPing = %d", ping);
@@ -94,13 +94,13 @@ int main(void)
 		
 		
 		mode = CAN_message_recieve->data[3];		// Receive mode from CAN
-		mode = 1;
-		//printf("%d\n",CAN_message_recieve->data[0]);
+		mode = 2;
+		
 		
 		switch(mode){
 			case 0:		// Menu active
 				
-				//printf("Menu is active\n");		
+				printf("Menu is active\n");		
 				break;
 			
 			case 1:		// Joystick
