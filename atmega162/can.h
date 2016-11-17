@@ -9,11 +9,11 @@
 typedef struct CAN_message_t{
 	int id;
 	uint8_t length;
-	int8_t data[];
+	int8_t* data;
 } CAN_message_t;
 
 CAN_message_t* CAN_message_recieve_get(void);
-CAN_message_t* CAN_message_send_init(int id, int length);
+CAN_message_t* CAN_message_init(int id, uint8_t length);
 void can_init(void);
 void CAN_byte_send(CAN_message_t* message);
 int CAN_error(void);
