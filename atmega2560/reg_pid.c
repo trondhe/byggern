@@ -35,16 +35,13 @@ int8_t pid_control(PID_control *p, int16_t r,  int16_t y){
 	float yk;
 	float u;
 	float ek;
-	//printf("%d\n",acquire_time());
-	//printf("pådrag = %.6f\t", uDk);
+
 	p->h=((float)acquire_time()/15625.0);
-	//printf("pådrag = %.6f\n", p->h);
+
 	reset_timer();
-	//_delay_ms(100);
-	//printf("Steglengde = %5.6f \t", p->h);
+
 	yk = (float)y;
-	//printf("Floatmåling = %d\t", y);
-	//printf("Floatmåling = %7.6f\n", yk);
+
 	ek =(float)(r - y);
 	//printf("reguleringsavvik = %.6f\t", ek);
 	

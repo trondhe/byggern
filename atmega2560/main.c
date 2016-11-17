@@ -99,96 +99,85 @@ int main(void)
 		
 		
 		printf("penis\n");
+		game = CAN_message_recieve->data[3];
 		mode = CAN_message_recieve->data[3];		// Receive mode from CAN
-		mode = 3;
+		mode = 1;
 		printf("x: %d\t",CAN_message_recieve->data[0]);
 		printf("sol: %d\n",CAN_message_recieve->data[2]);
 		_delay_ms(50);
 		
 		switch(mode){
-			case 0:		// Menu active
-				
-				printf("Menu is active\n");		
-				break; 
+			case 0:		// MENU
+			printf("Menu is active\n");
+			break;
 			
-			case 1:		// Joystick
-				printf("\n");
-				motor_control(CAN_message_recieve->data[0]);	// Control Position motor
-				servo_set_angle(CAN_message_recieve->data[0]);	// Control Servo motor
-				solenoid_trigger(CAN_message_recieve->data[2]);	// Control solenoid		
-				break;
+			case 1:		// CALIBRATION
+			if(adc_read(6) < 860 && calibration_stage == 0)
+			{
+				solenoid_trigger(1);
+				ping_pos_left = adc_read(0);
+				calibration_stage = 1;
+				_delay_ms(1000);
+			}
 			
-			case 2:		// Guns N' Roses mode with automatic
-				r = adc_read(0);
-				y = (motor_encoder_read()>> 3);	//Scale down from 32768 to 255
+			if(adc_read(6) < 860 && calibration_stage == 1)
+			{
+				solenoid_trigger(1);
+				ping_pos_right = adc_read(0);
+				calibration_stage = 2;
+				_delay_ms(1000);
+			}
+			
+			if(adc_read(6) < 860 && calibration_stage == 2)
+			{
+				solenoid_trigger(1);
+				ping_pos_over_motor = adc_read(0);
+				calibration_stage = 0;
+				_delay_ms(1000);
+			}
+			
+			printf("Min: %d\t",ping_pos_left);
+			printf("Max: %d\t",ping_pos_right);
+			printf("Motor: %d\n",ping_pos_over_motor);
+			
+			break;
+			
+			case 2:		// GAME MODE
+			
+				switch(mode){
 
-				u = pid_control(p, r, y);
-				//printf("ref = %d  Målt: %d\t", r,y);
-				motor_control (u);
-				//printf("Pådrag = %d\n", u);
-				if(adc_read(6) < 860){
-					//printf("SKYT!");
-					solenoid_toggle();			// Machine gun
-				}
-			
-				//enc_value = motor_encoder_read();
-			
-			
-			break;
-			
-			case 3:		// Guns N' Roses mode with semi-automatic
-			
-			if(adc_read(6) < 860)
-				{
-					printf("penis");
-					solenoid_trigger(1);		// Single shot
-				}
-			else
-				{
-					solenoid_trigger(0);
-				}
-			
-			break;
-			
-			case 4: // Guns N' Roses mode with burst
-			
-			break;
-			
-			case 5: // Calibration
-			
-				if(adc_read(6) < 860 && calibration_stage == 0)
-				{
-					solenoid_trigger(1);
-					ping_pos_left = adc_read(0);
-					calibration_stage = 1;
-					_delay_ms(1000);
-				}
+					case 0:		// Joystick movements with single-shot
+						solenoid_trigger(CAN_message_recieve->data[2]);	// Control solenoid
+						motor_control(CAN_message_recieve->data[0]);	// Control Position motor
+						servo_set_angle(CAN_message_recieve->data[0]);	// Control Servo motor
+						break;
 				
-				if(adc_read(6) < 860 && calibration_stage == 1)
-				{
-					solenoid_trigger(1);
-					ping_pos_right = adc_read(0);
-					calibration_stage = 2;
-					_delay_ms(1000);
-				}
+					case 1:		// Joystick movements with automatic
+						solenoid_toggle(CAN_message_recieve->data[2]);	// Control solenoid
+						motor_control(CAN_message_recieve->data[0]);	// Control Position motor
+						servo_set_angle(CAN_message_recieve->data[0]);	// Control Servo motor
+						break;
 				
-				if(adc_read(6) < 860 && calibration_stage == 2)
-				{
-					solenoid_trigger(1);
-					ping_pos_over_motor = adc_read(0);
-					calibration_stage = 0;
-					_delay_ms(1000);
-				}
+					case 2:		// PID movements with single-shot
+						solenoid_trigger(CAN_message_recieve->data[2]);	// Control solenoid
+						r = adc_read(0);
+						y = (motor_encoder_read()>> 3);	//Scale down from 32768 to 255
+						u = pid_control(p, r, y);
+						motor_control(u);
+						servo_set_angle(u);
+						break;
 				
-				printf("Min: %d\t",ping_pos_left);
-				printf("Max: %d\t",ping_pos_right);
-				printf("Motor: %d\n",ping_pos_over_motor);
-			
-			break;			
-			
-			
+					case 3:		// PID movements with automatic
+						solenoid_toggle(CAN_message_recieve->data[2]);	// Control solenoid
+						r = adc_read(0);
+						y = (motor_encoder_read()>> 3);	//Scale down from 32768 to 255
+						u = pid_control(p, r, y);
+						motor_control(u);
+						servo_set_angle(u);
+						break;
+				}
+				break;
 		}
-		
 		
 		
 		// IR Reciever
