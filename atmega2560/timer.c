@@ -6,24 +6,19 @@
 uint16_t volatile static t=0;
 
 void start_timer(void){
-	TCCR5B |=  (1 << CS50) | (1<<CS52);  // Prescaler set to 1024
-	TIMSK5 |= (1 << TOIE5);              // Overflow interrupt enable
+	TCCR5B |= (1 << CS50) | (1 << CS52);			// Prescaler set to 1024
 }
 
 void stop_timer(void){
 	TCCR5B &= ~(1 << CS50);
 	TCCR5B &= ~(1 << CS52);
-	TIMSK5 &= ~(1 << TOIE5);
 }
 
 uint16_t acquire_time(){
-	return t;
+	return TCNT5L;
 }
 
 void reset_timer(void){
 	t=0;
 }
 
-ISR(TIMER5_OVF_vect){
-	t++;
-}

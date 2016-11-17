@@ -11,7 +11,7 @@ void solenoid_init(){
 }
 
 void solenoid_trigger(int trigger){
-	if (trigger == 1) {
+	if (trigger == 0) {
 		PORTL &=~(1 << PL0);
 	} else {
 		PORTL |= (1 << PL0);
@@ -20,9 +20,9 @@ void solenoid_trigger(int trigger){
 
 void solenoid_toggle(){
 	PORTL &=~(1 << PL0);
-	_delay_ms(30);
+	_delay_ms(50);
 	PORTL |= (1 << PL0);
-	_delay_ms(30);
+	_delay_ms(50);
 }
 
 void solenoid_burst(){
