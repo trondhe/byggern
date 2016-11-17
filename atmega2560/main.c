@@ -15,6 +15,7 @@
 #include "adc.h"
 #include "ir.h"
 #include "solenoid.h"
+#include "reg_pid.h"
 
 
 
@@ -50,7 +51,6 @@ int main(void)
 	DAC_init();
 	adc_init();
 	motor_init();
-	pi_control_init(struct PI_control *p)
 	//motor_encoder_calibrate();
 	
 	// Init values
@@ -74,10 +74,9 @@ int main(void)
 	uint16_t y;
 	uint16_t e; // Reguleringsavvik;
 	int8_t u; // Pådrag
-	PI_control* p = NULL;
-	//int mgt = 0;
+	PID_control* p = pid_control_init();
 	
-	p = pi_control_init();
+	
     while(1)
     {
 		
@@ -108,9 +107,9 @@ int main(void)
 			
 			case 2:		// Guns N' Roses mode with automatic
 				r = adc_read(0);
-				y = (motor_encoder_read() >> 7);	//Scale down from 32000 to 256
-				e = r-y;
-				u = pi_control(p, e);
+				y = (motor_encoder_read() >> 7);	//Scale down from 32768 to 255
+
+				u = pid_control(p, r, y);
 				printf("Pådrag = %d", u);
 				motor_control (u);
 				

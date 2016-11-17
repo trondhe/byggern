@@ -9,18 +9,22 @@
 #ifndef PI_H_
 #define PI_H_
 
-struct PI_control{
+typedef struct PID_control{
 
-	int kp;
-	int ti;
-	unsigned char shift;
+	float kp;
+	float td;
+	float ti;
+	float h;
 	int max;
 	int min;
-	long i;
-} PI_control;
+	float yk_1;
+	float uPIk_1;
+	float ek_1;
+
+} PID_control;
 
 
-void pi_control(PI_control *p, int e);
-PI_control* pi_control_init();
+int8_t pid_control(PID_control *p, int r, int y);
+PID_control* pid_control_init();
 
 #endif /* PI_H_ */

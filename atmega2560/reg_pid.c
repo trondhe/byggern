@@ -10,50 +10,61 @@
  #include <avr/io.h>
  #include "reg_pid.h"
  
- PI_control* pi_control_init(){
-	 PI_control* p = malloc (sizeof(PI_control));
+ PID_control* pid_control_init(){
+	 PID_control* p = malloc (sizeof(PID_control));
 	 p->kp = 1;
 	 p->ti = 10;
-	 p->shift = 1;
+	 p->h = 0.001;
 	 p->max = 255;
 	 p->min = 0;
-	 p->i = 0L;
+	 p->td = 0;
+	 p->yk_1 = 0;
+	 p->ek_1 = 0;
+	 p->uPIk_1 = 0;
 	 
 	 return p;
  }
  
 
-long pi_control(struct PI_control *p, int e){
-	int int_ok;
-	long new_i;
-	long u;
+int8_t pid_control(PID_control *p, int r, int y){
+	
+	float uPIk;
+	float uDk;
+	float yk;
+	float u;
+	float ek;
+	
+	
+	yk = (float)y;
+	ek =(float)(r - y);
 
-	new_i = p->i + e;
+	
+	uPIk = p->uPIk_1 + (p->kp *(1 + (p->h/p->ti)) * ek) - p->ek_1; // PI med windup
 
-	u = (p->kp * (long)e + p->ti * new_i) >> p->shift;
+	if (uPIk > p->max){
+		uPIk = p->max;
+	}
 
-	int_ok = 1;
+	else if (uPIk < p->min){
+		uPIk = p->min;
+	}
 
+	uDk = p->kp * (p->td/p->h) * ((float)y - p->yk_1); // Derivator
+	
+	u = uPIk - uDk;
+	
 	if (u > p->max){
-		
 		u = p->max;
-
-		if (e > 0){
-			int_ok = 0;
-		}
 	}
 
 	else if (u < p->min){
 		u = p->min;
-
-		if (e < 0){
-			int_ok = 0;
-		}
 	}
-
-	if (int_ok == 1){
-		p->i = new_i;
-	}
+	
+	p->ek_1 = ek;
+	p->uPIk_1 = uPIk;
+	p->yk_1 = yk;
+	
 	
 	return (int8_t)u;
  }

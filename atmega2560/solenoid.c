@@ -20,9 +20,9 @@ void solenoid_trigger(int trigger){
 
 void solenoid_toggle(){
 	PORTL &=~(1 << PL0);
-	_delay_ms(50);
+	_delay_ms(30);
 	PORTL |= (1 << PL0);
-	_delay_ms(50);
+	_delay_ms(30);
 }
 
 void solenoid_burst(){
