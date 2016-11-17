@@ -2,6 +2,9 @@
 
 // CAN.c: Driver for CAN communication between nodes
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/delay.h>
@@ -15,7 +18,7 @@ CAN_message_t* CAN_message_recieve_get(){
 	return &CAN_message_recieve;
 }
 
-CAN_message_t* CAN_message_send_init(int id, int length) {
+CAN_message_t* CAN_message_init(int id, uint8_t length) {
 	CAN_message_t* msg = malloc(sizeof(CAN_message_t));
 	msg->id = id;
 	msg->length = length;
@@ -68,6 +71,7 @@ void CAN_byte_send(CAN_message_t* message){
 
 void CAN_data_receive() {
 
+	
 	//Get message id
 	CAN_message_recieve.id  = (CAN_read(MCP_RXB0SIDH) << 3) | (CAN_read(MCP_RXB0SIDL) >> 5);
 	
