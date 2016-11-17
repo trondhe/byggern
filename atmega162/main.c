@@ -14,6 +14,7 @@
 #include "adc.h"
 #include "oled.h"
 #include "screen.h"
+#include "system_logic.h"
 
 //#include "buzzer.h"
 //#include "music.h"
@@ -36,16 +37,17 @@ int main()
 	
 	
 	// Music init
-	DDRD |= (1 << PIND5);		//Set D5(OC1A) as output
-	BUZZER_init();
-	BUZZER_set_tempo(100);
-	BUZZER_start(1);
-	BUZZER_play_song();
+	//DDRD |= (1 << PIND5);		//Set D5(OC1A) as output
+	//BUZZER_init();
+	//BUZZER_set_tempo(100);
+	//BUZZER_start(1);
+	//BUZZER_play_song();
 	
 	// Enable global interrupt
 	sei();
 	
 	while(1){
+	
 		//ADC_debug();
 		system_loop();
 	}

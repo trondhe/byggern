@@ -11,10 +11,10 @@
 #include "adc.h"
 
 
-static int* menu_ctrl_state;
+static int* menu_ctrl_state_ptr = NULL;
 
 void menu_ctrl_state_init(){
-	menu_ctrl_state = menu_state_ctrl_get();
+	menu_ctrl_state_ptr = menu_state_ctrl_get();
 }
 
 char** screen_buffer_init() {
@@ -79,7 +79,7 @@ void screen_buffer_writemenu(char** buffer, node_t** node_current){
 
 	// Write guide arrow
 	for (int i = 1; i < 8; i++) {
-		if (i == *menu_ctrl_state + 1)
+		if (i == *menu_ctrl_state_ptr + 1)
 		{
 			buffer[i][0] = 45;
 		}

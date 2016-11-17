@@ -19,12 +19,13 @@ static int gamestate = 0;
 static int shoot = 0;
 node_t* node_current = NULL;
 char** buffer = NULL;
+int CAN_data[3];
 
 void system_logic_vars_init(){
 	node_current = menu_nodelist_init();
 	buffer = screen_buffer_init();
 	menu_ctrl_state_init();
-	CAN_message_init();
+	CAN_messages_init();
 }
 
 void system_loop() {
@@ -45,9 +46,11 @@ void system_loop() {
 		} else {
 		shoot = (PINB & (1<<PB0));
 		screen_buffer_writegame(buffer);
-		CAN_message_send.data[0] = joy_pos.x;
-		CAN_message_send.data[1] = joy_pos.y;
-		CAN_message_send.data[2] = shoot;
+		CAN_data[0] = joy_pos.x;
+		CAN_data[1] = joy_pos.y;
+		CAN_data[2] = shoot;
+		CAN_message_transmit(CAN_data);
 		
 	}
+
 }
