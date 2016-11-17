@@ -32,13 +32,8 @@ int main()
 	oled_init();
 	can_init();
 	mfcard_io_init();
-	menuctrl_state_init();
+	system_logic_vars_init();
 	
-	// Declaration
-	volatile CAN_message_t* CAN_message_recieve = CAN_message_passPtr();
-	CAN_message_t CAN_message_send;
-	CAN_message_send.id = 1;
-	CAN_message_send.length = 8;
 	
 	// Music init
 	DDRD |= (1 << PIND5);		//Set D5(OC1A) as output
@@ -47,48 +42,12 @@ int main()
 	BUZZER_start(1);
 	BUZZER_play_song();
 	
-	// Menu and screen 
-	node_t* node_current = node_menu_init();
-	char** buffer = screenbuffer_init();
-	//int* menuctrl_state = menuctrl_state_passValue();
-
-	// Joystick 
-	joy_position position;
-	
-	
-	// Stuff?! 
-	int gamestate = 0;
-	int shoot = 0;
-	int counter = 0;
-	
 	// Enable global interrupt
 	sei();
 	
 	while(1){
-		
 		//ADC_debug();
-		
-		if(t_bit_l(PINB, PB0)){
-			gamestate = 1;
-		}
-		if(t_bit_l(PINB, PB1)){
-			gamestate = 0;
-		}
-		
-		if(gamestate == 0){
-			menu_nav(&node_current);
-			buffer_writemenu(buffer, &node_current);
-		} else {
-			shoot = (PINB & (1<<PB0));
-			buffer_writegame(buffer);
-			position = readJoystick();
-			CAN_message_send.data[0] = position.x;
-			CAN_message_send.data[1] = position.y;
-			CAN_message_send.data[2] = shoot;
-			CAN_byte_send(&CAN_message_send);
-		}
-
-		OLED_print_buffer(buffer);
+		system_loop();
 	}
 	return 0;	
 }

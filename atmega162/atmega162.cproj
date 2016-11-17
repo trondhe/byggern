@@ -191,6 +191,12 @@
     <Compile Include="can.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="comm.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="comm.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="drawings.h">
       <SubType>compile</SubType>
     </Compile>
@@ -200,10 +206,10 @@
     <Compile Include="fn_init.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="system.c">
+    <Compile Include="system_logic.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="system.h">
+    <Compile Include="system_logic.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">

@@ -9,8 +9,8 @@ typedef struct node_t {
 	int (*action)();
 } node_t;
 
-node_t* node_init(int num_childs, char* name, node_t* parent, void* action);
-node_t* node_menu_init();
-void menu_nav(node_t** node_current);
-int* menuctrl_state_passPtr();
+node_t* menu_node_init(int num_childs, char* name, node_t* parent, void* action);
+node_t* menu_nodelist_init();
+void menu_nav(node_t** node_current, joy_position* joy_pos)
+int* menu_state_ctrl_get();
 void testfunction_print();
