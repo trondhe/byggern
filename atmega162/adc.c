@@ -4,24 +4,11 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "adc.h"
 #include "setup.h"
 
 volatile int adcTemp = 0;
 volatile char* adc = 0x1404;
-
-typedef enum{
-	JOYSTICK_Y  = 5,
-	JOYSTICK_X  = 4,
-	SLIDER_L	= 6,
-	SLIDER_R    = 7
-} ADC_channel;
-
-typedef struct {
-	int x;
-	int y;
-	int* direction;
-} joy_position;
-
 
 void adcRead(ADC_channel ch){
 	*adc = ch;
@@ -47,10 +34,7 @@ uint8_t JoystickY(){
 joy_position readJoystick(){
 	joy_position position;
 	position.x = (int)(200*((((float)JoystickX()) / 255.0) - 0.5025));
-	//printf("X = %d\t ", position.x);
 	position.y = (int)(200*((((float)JoystickY()) / 255.0) - 0.5025));
-	//printf("Y = %d\t\t\n\n", position.y);
-	
 	
 	if (abs(position.x) > 90 || abs(position.y) > 90){
 		
