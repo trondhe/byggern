@@ -43,10 +43,10 @@ void system_loop() {
 			break;
 		
 		case 1: // Gamemode: Calibration
-			screen_buffer_writecalibrate();
+			screen_buffer_writecalibrate(&node_current);
 			break;
 		case 2: // Gamemode: Game
-			screen_buffer_writegame();
+			screen_buffer_writegame(&node_current);
 			break;
 	}
 	

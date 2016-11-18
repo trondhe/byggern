@@ -102,30 +102,7 @@ void screen_buffer_writegame(){
 	OLED_print_buffer(buffer);
 }
 
-void write_center_text(char* text, int on_line, int if_fill, int fill) {
-	int node_name_len = strlen(char* text);
-	int buffer_space_remaining = 16 - node_name_len;
-	int buffer_space_remhalf = buffer_space_remaining / 2;
-	int buffer_space_modulo = buffer_space_remaining % 2;
-	
-	// Printing centered text
-	for(int i = buffer_space_remhalf; i < buffer_space_remhalf+node_name_len; i++){
-		buffer[on_line][i] = text[i-buffer_space_remhalf];
-	}
-
-	// With fill
-	if(int fill == 1) {
-		for(int i = 0; i < buffer_space_remhalf; i++){
-			buffer[on_line][i] = fill;
-		}
-
-		for(int i = buffer_space_remhalf+node_name_len+buffer_space_modulo; i < 16; i++){
-			buffer[on_line][i] = fill;
-		}
-	}
-}
-
-void screen_buffer_writecalibrate() {
+void screen_buffer_writecalibrate(node_t** node_current) {
 		int node_name_len = strlen((**node_current).node_name);
 		int buffer_space_remaining = 16 - node_name_len;
 		int buffer_space_remhalf = buffer_space_remaining / 2;
@@ -141,4 +118,27 @@ void screen_buffer_writecalibrate() {
 			buffer[0][i] = 61;
 		}
 
+}
+
+void write_center_text(char* text, int on_line, int if_fill, int fill) {
+	int node_name_len = strlen(text);
+	int buffer_space_remaining = 16 - node_name_len;
+	int buffer_space_remhalf = buffer_space_remaining / 2;
+	int buffer_space_modulo = buffer_space_remaining % 2;
+	
+	// Printing centered text
+	for(int i = buffer_space_remhalf; i < buffer_space_remhalf+node_name_len; i++){
+		buffer[on_line][i] = text[i-buffer_space_remhalf];
+	}
+
+	// With fill
+	if(fill == 1) {
+		for(int i = 0; i < buffer_space_remhalf; i++){
+			buffer[on_line][i] = fill;
+		}
+
+		for(int i = buffer_space_remhalf+node_name_len+buffer_space_modulo; i < 16; i++){
+			buffer[on_line][i] = fill;
+		}
+	}
 }
