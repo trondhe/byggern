@@ -6,7 +6,7 @@
 #include <string.h>
 #include "uart.h"
 
-void init_OLED();
+void oled_init();
 void cmd_OLED(char cmd);
 void data_OLED(char data);
 int OLED_print_char(char c);

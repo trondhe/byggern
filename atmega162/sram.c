@@ -4,10 +4,9 @@
 #include <stdlib.h>
 #include "uart.h"
 
-void SRAM_init(void){
+void sram_init(void){
 	MCUCR |= 1<<SRE;						// Enable external memory
 	SFIOR |= 1<<XMM2;
-	DDRB  &= ~((1<<DDB0)|(1<<DDB1)|(1<<DDB2));	// Enable digital inputs from malfunctionboard
 }
 
 void SRAM_write(unsigned int address, unsigned int data) {

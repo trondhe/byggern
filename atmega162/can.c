@@ -2,16 +2,24 @@
 
 // CAN.c: Driver for CAN communication between nodes
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/delay.h>
 #include "mcp.h"
 #include "can.h"
+#include "setup.h"
 
-volatile CAN_message_t CAN_message_recieve;
+CAN_message_t CAN_message_recieve;
+CAN_message_t CAN_message_send;
 
-CAN_message_t* CAN_message_pass2main(){
-	return &CAN_message_recieve;
+void CAN_message_transmitt(int* data){
+	for(int i = 0; i < CAN_message_send.length; i++) {
+		CAN_message_send.data[i] = data[i];
+	}
+	CAN_byte_send(&CAN_message_send);
 }
 
 void CAN_init(){
@@ -19,16 +27,18 @@ void CAN_init(){
 	CAN_bitModify(MCP_RXB0CTRL,0b00000100, 0xFF);			// Rollover disable, mask/filter off			
 	CAN_bitModify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL);		// Loopback mode
 	CAN_bitModify(MCP_CANINTE, 0x01, 1);					// Enable interrupt
+	CAN_message_send.id = 2;
+	CAN_message_send.length = 8;
 }
 
 int CAN_error(void) {
 	uint8_t error = CAN_read(MCP_TXB0CTRL);
 	
 	//Transmission error detected
-	if (test_bit(error, 4)) return -1;
+	if (t_bit_h(error, 4)) return -1;
 	
 	//Message lost arbitration
-	if (test_bit(error, 5)) return -2;
+	if (t_bit_h(error, 5)) return -2;
 	
 	return 0;
 }
@@ -56,6 +66,7 @@ void CAN_byte_send(CAN_message_t* message){
 
 void CAN_data_receive() {
 
+	
 	//Get message id
 	CAN_message_recieve.id  = (CAN_read(MCP_RXB0SIDH) << 3) | (CAN_read(MCP_RXB0SIDL) >> 5);
 	

@@ -11,7 +11,7 @@ volatile char *OLED_data = (char *) 0x1200;
 
 uint8_t page, col;
 
-void init_OLED()
+void oled_init()
 {
 	//Setup the OLED display
 	

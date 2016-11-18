@@ -1,6 +1,8 @@
 // Created by: Lars-Erik Notevarp Bjørge, Trond Hübertz Emaus, Kristian Husevåg Krohn
 #pragma once
 
+#include "adc.h"
+
 typedef struct node_t {
 	char node_name[16];
 	struct node_t *node_prnt;
@@ -9,8 +11,8 @@ typedef struct node_t {
 	int (*action)();
 } node_t;
 
-node_t* node_init(int num_childs, char* name, node_t* parent, void* action);
-node_t* node_menuinit();
-void menu_nav(node_t** node_current);
-int* menuctrl_state_pass2c();
-void testfunction_print();
+node_t* menu_node_init(int num_childs, char* name, node_t* parent, void* action);
+node_t* menu_nodelist_init();
+void menu_nav(node_t** node_current, joy_position* joy_pos);
+void menu_vals_init();
+int* menu_state_ctrl_get();

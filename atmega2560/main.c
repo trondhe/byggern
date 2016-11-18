@@ -15,6 +15,7 @@
 #include "adc.h"
 #include "ir.h"
 #include "solenoid.h"
+#include "reg_pid.h"
 
 
 
@@ -50,7 +51,6 @@ int main(void)
 	DAC_init();
 	adc_init();
 	motor_init();
-	
 	//motor_encoder_calibrate();
 	
 	// Init values
@@ -61,37 +61,137 @@ int main(void)
 	CAN_message_t CAN_message_send;
 	CAN_message_send.id = 2;
 	CAN_message_send.length = 8;
+	PID_control* p = pid_control_init();
+	
 	
 	// Enable global interrupt
 	sei();
+	
+	// testing variables
 	int k; // IR: 1 if obstructed, 0 if nothing, -1 neutral
 	int16_t counter = 0;
-	uint16_t ping, ir, shoot;
+	uint16_t ir, shoot;
+	int8_t mode;
+	int8_t options;
+	int8_t sol;
+	int8_t x_pos;
+	int16_t r; // Referanse
+	int16_t y;
+	int16_t ping_pos_left;
+	int16_t ping_pos_right;
+	int16_t ping_pos_over_motor;
+	int calibration_stage = 0;
 
+	int8_t u; // Pådrag
+	long ping;
+
+	
     while(1)
     {
-		
+		//debug();
 		// TESTING AREA			//////////////////////////////
-		ping = adc_read(0);
-		printf("\nPing = %d", ping);
-		//_delay_ms(10);	
-		ir = adc_read(4);
-		printf("        IR = %d", ir);
-		//_delay_ms(10);	
-		shoot = adc_read(6);
-		printf("        Shoot = %d", shoot);
-		//_delay_ms(10);
+
 		// END TESTING AREA		//////////////////////////////
+		if(CAN_message_recieve->id == 1)
+		{
+			printf("Message with id 1 received\n");
+			ping |= (CAN_message_recieve->data[0] << 24);
+			ping |= (CAN_message_recieve->data[1] << 16);
+			ping |= (CAN_message_recieve->data[2] << 8);
+			ping |= CAN_message_recieve->data[3];
+			printf("%ld\n",ping);
+		}
 		
+		else if(CAN_message_recieve->id == 2)
+		{	
+			printf("Message with id 2 received\n");
+			mode = CAN_message_recieve->data[3];				// Receive mode byte from CAN
+			options = CAN_message_recieve->data[4];				// Receive options byte from CAN
+			sol = CAN_message_recieve->data[2];
+			x_pos = CAN_message_recieve->data[0];
+		}
+
+		else
+		{
+			printf("CAN message with unknown id:%d \n",CAN_message_recieve->id);	
+		}
+
+
+		_delay_ms(50);
 		
-		// Control Position motor
-		motor_control(CAN_message_recieve->data[0]);
+		switch(mode){
+			case 0:		// MENU
+				printf("Menu is active\n");
+			break;
+			
+			case 1:		// CALIBRATION
+			if(adc_read(6) < 860 && calibration_stage == 0)
+			{
+				solenoid_trigger(1);
+				ping_pos_left = adc_read(0);
+				calibration_stage = 1;
+				_delay_ms(1000);
+			}
+			
+			if(adc_read(6) < 860 && calibration_stage == 1)
+			{
+				solenoid_trigger(1);
+				ping_pos_right = adc_read(0);
+				calibration_stage = 2;
+				_delay_ms(1000);
+			}
+			
+			if(adc_read(6) < 860 && calibration_stage == 2)
+			{
+				solenoid_trigger(1);
+				ping_pos_over_motor = adc_read(0);
+				calibration_stage = 0;
+				_delay_ms(1000);
+			}
+			
+			printf("Min: %d\t",ping_pos_left);
+			printf("Max: %d\t",ping_pos_right);
+			printf("Motor: %d\n",ping_pos_over_motor);
+			
+			break;
+			
+			case 2:		// GAME MODE
+			
+				switch(options){
+// 
+					case 0:		// Joystick movements with single-shot
+						solenoid_trigger(sol);	// Control solenoid
+						motor_control(x_pos);	// Control Position motor
+						servo_set_angle(x_pos);	// Control Servo motor
+						break;
+				
+					case 1:		// Joystick movements with automatic
+						solenoid_toggle(sol);	// Control solenoid
+						motor_control(x_pos);	// Control Position motor
+						servo_set_angle(x_pos);	// Control Servo motor
+						break;
+				
+					case 2:		// PID movements with single-shot
+						solenoid_trigger(sol);	// Control solenoid
+						r = adc_read(0);
+						y = (motor_encoder_read()>> 3);	//Scale down from 32768 to 255
+						u = pid_control(p, r, y);
+						motor_control(u);
+						servo_set_angle(u);
+						break;
+				
+					case 3:		// PID movements with automatic
+						solenoid_toggle(sol);	// Control solenoid
+						r = adc_read(0);
+						y = (motor_encoder_read()>> 3);	//Scale down from 32768 to 255
+						u = pid_control(p, r, y);
+						motor_control(u);
+						servo_set_angle(u);
+						break;
+				}
+				break;
+		}
 		
-		// Control Servo motor
-		servo_set_angle(CAN_message_recieve->data[0]);
-		
-		// Control solenoid
-		solenoid_trigger(CAN_message_recieve->data[2]);
 		
 		// IR Reciever
 		k = ir_obstructed(); 
@@ -99,10 +199,14 @@ int main(void)
 		
 		// Unfinished stuff
 		enc_value = motor_encoder_read();
-		
-		//UART_print_char("\n");
-		//UART_print_int(enc_value);
+
     }
 	
 	return 0;
+}
+
+void debug(){
+		printf("\nPing = %d", adc_read(0));
+		printf("\nIR = %d", adc_read(4));
+		printf("\nShoot = %d", adc_read(6));
 }
