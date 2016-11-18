@@ -7,4 +7,4 @@
 char** screen_buffer_init();
 void screen_buffer_writemenu(char** buffer, node_t** node_current);
 void screen_buffer_writegame(char** buffer);
-void menu_ctrl_state_init();
+void screen_vals_init();

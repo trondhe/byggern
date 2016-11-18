@@ -14,5 +14,5 @@ typedef struct node_t {
 node_t* menu_node_init(int num_childs, char* name, node_t* parent, void* action);
 node_t* menu_nodelist_init();
 void menu_nav(node_t** node_current, joy_position* joy_pos);
+void menu_vals_init();
 int* menu_state_ctrl_get();
-void testfunction_print();

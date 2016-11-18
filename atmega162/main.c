@@ -31,7 +31,7 @@ int main()
 	uart_init(MYUBRR);
 	interrupt_init();
 	oled_init();
-	can_init();
+	CAN_init();
 	mfcard_io_init();
 	system_logic_vars_init();
 	
