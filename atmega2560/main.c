@@ -70,6 +70,7 @@ int main(void)
 	CAN_message_send.length = 8;
 	PID_control* p = pid_control_init();
 	sys_val_t sys_vals = {.mode=0, .settings=0, .calibration_info=0};
+	int triggerVal = 970; 
 	
 	
 	// Enable global interrupt
@@ -91,24 +92,26 @@ int main(void)
 	
 
 	int8_t u; // Pådrag
-	long ping;
+	uint16_t ping;
 
 	
     while(1)
     {
-		//debug();
-		// TESTING AREA			//////////////////////////////
-
-		// END TESTING AREA		//////////////////////////////
 		if(CAN_message_recieve->id == 1)
 		{
-			//printf("CAN: %d\t",CAN_message_recieve->id);
-			ping |= (CAN_message_recieve->data[0] << 24);
-			ping |= (CAN_message_recieve->data[1] << 16);
-			ping |= (CAN_message_recieve->data[2] << 8);
-			ping |= CAN_message_recieve->data[3];
-			printf("%ld\n",ping);
-			//printf("%d\n",CAN_message_recieve->data[0]);
+			
+			ping = CAN_message_recieve->data[0];
+			//printf(byte_to_binary(ping));
+			//printf("\t");
+			ping = CAN_message_recieve->data[1];
+			//printf(byte_to_binary(ping));
+			//printf("\n");
+			
+			ping = CAN_message_recieve->data[0] << 8;
+			ping |= CAN_message_recieve->data[1];
+			//printf("%u\n",ping);
+			
+			
 			
 		}
 		
@@ -127,7 +130,8 @@ int main(void)
 		{
 			printf("CAN message with unknown id:%d \t",CAN_message_recieve->id);
 		}
-		
+		//sys_vals.mode = 2;
+		//sys_vals.settings = 1;
 		switch(sys_vals.mode){
 			case 0:		// MENU
 				//printf("Menu is active\n");
@@ -137,32 +141,32 @@ int main(void)
 				printf("Calibration mode\t");
 			
 				sys_vals.calibration_info = 2;
-				if(adc_read(6) < 860 && calibration_stage == 0)
+				if(adc_read(6) < triggerVal && calibration_stage == 0)
 				{
 					sys_vals.calibration_info = 3;
-					solenoid_trigger(1);
-					ping_pos_left = adc_read(0);
+					solenoid_trigger(1,triggerVal);
+					ping_pos_left = ping;
 					calibration_stage = 1;
 					_delay_ms(1000);
 					
 					
 				}
 				
-				if(adc_read(6) < 860 && calibration_stage == 1)
+				if(adc_read(6) < triggerVal && calibration_stage == 1)
 				{
 					sys_vals.calibration_info = 4;
-					solenoid_trigger(1);
-					ping_pos_right = adc_read(0);
+					solenoid_trigger(1,triggerVal);
+					ping_pos_right = ping;
 					calibration_stage = 2;
 					_delay_ms(1000);
 					
 				}
 				
-				if(adc_read(6) < 860 && calibration_stage == 2)
+				if(adc_read(6) < triggerVal && calibration_stage == 2)
 				{
 					sys_vals.calibration_info = 1;
-					solenoid_trigger(1);
-					ping_pos_over_motor = adc_read(0);
+					solenoid_trigger(1,triggerVal);
+					ping_pos_over_motor = ping;
 					calibration_stage = 0;
 					_delay_ms(1000);
 
@@ -181,23 +185,23 @@ int main(void)
 				switch(sys_vals.settings){
 
 					case 0:		// Joystick movements with single-shot
-						printf("Joystick with single-shot\t");
-						solenoid_trigger(buttons);	// Control solenoid
+						//printf("Joystick with single-shot\t");
+						solenoid_trigger(buttons,triggerVal);	// Control solenoid
 						motor_control(x_pos);	// Control Position motor
 						servo_set_angle(x_pos);	// Control Servo motor
 						break;
 				
 					case 1:		// Joystick movements with automatic
-						printf("Joystick with automatic\t");
-						solenoid_toggle(buttons);	// Control solenoid
+						//printf("Joystick with automatic\t");
+						solenoid_toggle(buttons, triggerVal);	// Control solenoid
 						motor_control(x_pos);	// Control Position motor
 						servo_set_angle(x_pos);	// Control Servo motor
 						break;
 				
 					case 2:		// PID movements with single-shot
-						printf("PID with single-shot\t");
-						solenoid_trigger(buttons);	// Control solenoid
-						r = adc_read(0);
+						//printf("PID with single-shot\t");
+						solenoid_trigger(buttons,triggerVal);	// Control solenoid
+						r = ping;
 						y = (motor_encoder_read()>> 3);	//Scale down from 32768 to 255
 						u = pid_control(p, r, y);
 						motor_control(u);
@@ -205,9 +209,9 @@ int main(void)
 						break;
 				
 					case 3:		// PID movements with automatic
-						printf("PID with automatic\t");
-						solenoid_toggle(buttons);	// Control solenoid
-						r = adc_read(0);
+						//printf("PID with automatic\t");
+						solenoid_toggle(buttons,triggerVal);	// Control solenoid
+						r = ping;
 						y = (motor_encoder_read()>> 3);	//Scale down from 32768 to 255
 						u = pid_control(p, r, y);
 						motor_control(u);
