@@ -11,9 +11,14 @@
 #include "mcp.h"
 #include "can.h"
 #include "setup.h"
+#include "uart.h"
 
 CAN_message_t CAN_message_recieve;
 CAN_message_t CAN_message_send;
+
+CAN_message_t* CAN_message_recieve_get(){
+	return &CAN_message_recieve;
+}
 
 void CAN_message_transmitt(int* data){
 	for(int i = 0; i < CAN_message_send.length; i++) {
@@ -65,8 +70,6 @@ void CAN_byte_send(CAN_message_t* message){
 
 
 void CAN_data_receive() {
-
-	
 	//Get message id
 	CAN_message_recieve.id  = (CAN_read(MCP_RXB0SIDH) << 3) | (CAN_read(MCP_RXB0SIDL) >> 5);
 	
@@ -81,7 +84,6 @@ void CAN_data_receive() {
 	//Clear interrupt flag
 	//printf("%d", rx_flag);
 	CAN_bitModify(MCP_CANINTF, 0x01, 0);	// Clear interrupt
-
 }
 
 

@@ -21,16 +21,16 @@ void menu_vals_init(){
 // TESTING IN PROGRESS	///////////////////////////////////////////////
 
 void play_gunmode() {
-	if (sys_val->is_calibrated == 0) { // Checks if system is calibrated
-		sys_val->gamemode = 1; // Set calibration mode
+	if (sys_val->calibration_info == 0) { // Checks if system is calibrated
+		sys_val->mode = 1; // Set calibration mode
 		} else {
-		sys_val->gamemode = 2; // Set game mode
+		sys_val->mode = 2; // Set game mode
 		c_bit(sys_val->settings, SETT_JOY_GUN);
 	}
 }
 
 void play_joymode() {
-	sys_val->gamemode = 2;
+	sys_val->mode = 2;
 
 }
 

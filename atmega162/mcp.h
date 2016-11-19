@@ -156,4 +156,4 @@ void CAN_bitModify(uint8_t address, uint8_t bitNumber, uint8_t bitData);
 #define MCP_TX2IF		0x10
 #define MCP_ERRIF		0x20
 #define MCP_WAKIF		0x40
-#define MCP_MERRF	0x80
+#define MCP_MERRF		0x80

@@ -13,6 +13,7 @@ typedef struct CAN_message_t{
 } CAN_message_t;
 
 
+CAN_message_t* CAN_message_recieve_get();
 void CAN_message_transmitt(int* data);
 void CAN_init();
 int CAN_error(void);
