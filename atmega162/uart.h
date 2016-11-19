@@ -12,5 +12,6 @@
 extern FILE *mystdio;
 
 void UART_Transmit( unsigned char data );
+const char *byte_to_binary(int x);
 unsigned char UART_Receive( void );
 void uart_init( unsigned int ubrr );

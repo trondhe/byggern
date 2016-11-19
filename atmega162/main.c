@@ -45,7 +45,7 @@ int main()
 	
 	// Enable global interrupt
 	sei();
-	
+
 	while(1){
 	
 		//ADC_debug();

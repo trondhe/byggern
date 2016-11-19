@@ -11,9 +11,14 @@
 #include "mcp.h"
 #include "can.h"
 #include "setup.h"
+#include "uart.h"
 
 CAN_message_t CAN_message_recieve;
 CAN_message_t CAN_message_send;
+
+CAN_message_t* CAN_message_recieve_get(){
+	return &CAN_message_recieve;
+}
 
 void CAN_message_transmitt(int* data){
 	for(int i = 0; i < CAN_message_send.length; i++) {
@@ -24,7 +29,7 @@ void CAN_message_transmitt(int* data){
 
 void CAN_init(){
 	McpInit();
-	CAN_bitModify(MCP_RXB0CTRL,0b00000100, 0xFF);			// Rollover disable, mask/filter off			
+	CAN_bitModify(MCP_RXB0CTRL,0b00000100, 0xFF);			// Rollover disable, mask/filter off
 	CAN_bitModify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL);		// Loopback mode
 	CAN_bitModify(MCP_CANINTE, 0x01, 1);					// Enable interrupt
 	CAN_message_send.id = 2;
@@ -44,11 +49,11 @@ int CAN_error(void) {
 }
 
 void CAN_byte_send(CAN_message_t* message){
-			
+	
 	//Set the message id (use standard identifier)
 	CAN_write(MCP_TXB0SIDH, (int8_t)(message->id >> 3));
 	CAN_write(MCP_TXB0SIDL, (int8_t)(message->id << 5));
-		
+	
 	//Set data length and use data frame (RTR = 0)
 	CAN_write(MCP_TXB0DLC, (0x0F) & (message->length));
 
@@ -56,7 +61,7 @@ void CAN_byte_send(CAN_message_t* message){
 	for (int i = 0; i < message->length; i++) {
 		CAN_write(MCP_TXB0D0 + i, message->data[i]);
 	}
-		
+	
 	//CAN_write(MCP_TXB0D0, message->data[0]);
 	//Request to send via TX0
 	CAN_requestToSend(MCP_RTS_TX0);
@@ -65,8 +70,6 @@ void CAN_byte_send(CAN_message_t* message){
 
 
 void CAN_data_receive() {
-
-	
 	//Get message id
 	CAN_message_recieve.id  = (CAN_read(MCP_RXB0SIDH) << 3) | (CAN_read(MCP_RXB0SIDL) >> 5);
 	
@@ -81,7 +84,6 @@ void CAN_data_receive() {
 	//Clear interrupt flag
 	//printf("%d", rx_flag);
 	CAN_bitModify(MCP_CANINTF, 0x01, 0);	// Clear interrupt
-
 }
 
 
