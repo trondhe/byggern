@@ -27,15 +27,15 @@ void CAN_init(){
 	
 	// Rollover disable and normal mode
 	CAN_bitModify(MCP_RXB0CTRL,0b00000100, 0xFF);					
-	CAN_bitModify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL);		
+	CAN_bitModify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL);
 	
-	// Set baudrate equal to 500KBs
-	CAN_bitModify(MCP_CNF1, 0x00, 0x00);	
-	CAN_bitModify(MCP_CNF2, 0xF0, 0xF0);
-	CAN_bitModify(MCP_CNF3, 0x86, 0x86);
+	// Set baudrate equal to 250Kbit
+	CAN_bitModify(MCP_CNF1, 0xFF, 0x43);	
+	CAN_bitModify(MCP_CNF2, 0xFF, 0x89);
+	CAN_bitModify(MCP_CNF3, 0xFF, 0x02);
 	
-	// Enable interrupt on CAN receive
-	CAN_bitModify(MCP_CANINTE, 0x01, 1);
+	// Enable interrupt on CAN receive (dual receive buffer)
+	CAN_bitModify(MCP_CANINTE, 0x03, 1);
 }
 
 

@@ -1,10 +1,7 @@
 #include<SPI.h>
 
-
-
 #define interruptPin 2
 #define SS 9
-
 
 #define MCP_RESET 0xC0
 #define MCP_READ 0x03
@@ -47,8 +44,6 @@ typedef struct CAN_message_t{
   uint8_t data[8];
 } CAN_message_t;
 
-
-
 volatile CAN_message_t CAN_message_recieve;
 CAN_message_t CAN_message_send;
 
@@ -57,9 +52,9 @@ void CAN_init(){
   McpInit();
   CAN_bitModify(MCP_RXB0CTRL,0x04, 0xFF);     // Rollover disable, mask/filter off      
   CAN_bitModify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL);   // Normal mode
-  //CAN_bitModify(MCP_CNF1, 0x00, 0x00);
-  //CAN_bitModify(MCP_CNF2, 0xF0, 0xF0);
-  //CAN_bitModify(MCP_CNF3, 0x86, 0x86);
+  //CAN_bitModify(MCP_CNF1, 0xFF, 0x43);
+  //CAN_bitModify(MCP_CNF2, 0xFF, 0x89);
+  //CAN_bitModify(MCP_CNF3, 0xFF, 0x02);
   CAN_bitModify(MCP_CANINTE, 0x01, 1);          // Enable interrupt
 }
 

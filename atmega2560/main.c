@@ -71,13 +71,15 @@ int main(void)
 		// Acquire IR value
 		ir = ir_obstructed();
 		
-		// Send IR value to node 1 to count score
-		CAN_message_send.data[0] = ir;
+		// Send IR value and calibration data to node 1
+		CAN_message_send.data[0] = 0;
+		CAN_message_send.data[1] = sys_vals.calibration_info;
 		CAN_byte_send(&CAN_message_send);
 						
 		// Read CAN messages from node 3 (Arduino UNO)
 		if(CAN_message_recieve->id == 1){
 			
+			//printf("CAN id:%d \n",CAN_message_recieve->id);
 			// Get position of hand from ultrasonic sensor
 			ping = CAN_message_recieve->data[0] << 8;
 			ping |= CAN_message_recieve->data[1];
@@ -90,12 +92,12 @@ int main(void)
 		else if(CAN_message_recieve->id == 50){	
 			
 			// Receive game mode, settings, joystick position and button from node 1
-			CAN_message_send.data[1] = sys_vals.calibration_info;
 			sys_vals.mode = CAN_message_recieve->data[3];					
 			sys_vals.settings = CAN_message_recieve->data[4];				
 			solenoid = CAN_message_recieve->data[2];			
 			y_pos = CAN_message_recieve->data[1];
 			x_pos = CAN_message_recieve->data[0];
+			
 		}
 
 		else{
@@ -157,12 +159,14 @@ int main(void)
 				switch(sys_vals.settings){
 
 					case 0:		// Joystick movements with single-shot
+					
 						solenoid_trigger(solenoid,gun_value);	
 						motor_control(x_pos);	
 						servo_set_angle(x_pos);	
 						break;
 				
 					case 1:		// Joystick movements with automatic
+					
 						solenoid_toggle(solenoid, gun_value);	
 						motor_control(x_pos);
 						servo_set_angle(x_pos);
@@ -170,7 +174,7 @@ int main(void)
 				
 					case 2:		// PID movements with single-shot
 					
-						solenoid_trigger(solenoid,gun_value)
+						solenoid_trigger(solenoid,gun_value);
 						
 						//Adjust reference for offset
 						r = ping-650;
