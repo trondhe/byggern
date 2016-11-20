@@ -4,11 +4,19 @@
 #include <stdlib.h>
 #include "uart.h"
 
+
+//***************************************************************
+//	Initialization of external SRAM								*
+//***************************************************************
 void sram_init(void){
 	MCUCR |= 1<<SRE;						// Enable external memory
 	SFIOR |= 1<<XMM2;
 }
 
+
+//***************************************************************
+//	SRAM direct R/W functions, not used, heap moved to SRAM		*
+//***************************************************************
 void SRAM_write(unsigned int address, unsigned int data) {
 	//Start address for the SRAM
 	volatile char *ext_ram = (char *) 0x1800;
@@ -25,6 +33,10 @@ unsigned int SRAM_read(unsigned int address) {
 	return ext_ram[address];
 }
 
+
+//***************************************************************
+//	SRAM integrity test											*
+//***************************************************************
 void SRAM_test(void) {
 	volatile char *ext_ram = (char *) 0x1780; // Start address for the SRAM
 	uint16_t ext_ram_size = 0x800;

@@ -8,38 +8,58 @@
 #define SPI_MISO PB6
 #define SPI_SCK PB7
 
+
+//***************************************************************
+//	Initilization of SPI										*
+//***************************************************************
 void SPI_Init(void) {
-	DDRB |= (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<SPI_SS);			//Set MOSI and SCK output, all others input 
-	DDRB &= ~(1<<SPI_MISO);										//Set MISO as input pin (slave init)
-	PORTB |= (1<<DDB6);											//Set internal pullup for MISO
-	SPCR |= (1<<SPE)|(1<<MSTR)|(1<<SPR0);						//Enable SPI, Master, set clock rate fck/16 
+	DDRB |= (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<SPI_SS);	// Set MOSI and SCK output 
+	DDRB &= ~(1<<SPI_MISO);								// Set MISO as input pin
+	PORTB |= (1<<DDB6);									// Set internal pullup for MISO
+	SPCR |= (1<<SPE)|(1<<MSTR);							// Enable SPI, Master
+	SPSR |= (1<<SPI2X);									// Set fosc/2
 }
 
+
+//***************************************************************
+//	Transmit via SPI											*
+//***************************************************************
 void SPI_MasterTransmit(char cData) {
-	// Start transmission
-	SPDR = cData;
 	
-	// Wait for transmission					
-	while(!(SPSR & (1<<SPIF)));		
+	SPDR = cData;					
+	
+	// Wait for transmission									
+	while(!(SPSR & (1<<SPIF)));											
 }
 
 
+//***************************************************************
+//	Receive from SPI											*
+//***************************************************************
 char SPI_SlaveReceive(void) {
-	// Send dummy bit for initialization purposes
+	
+	// Send dummy bit
 	SPI_MasterTransmit(0);
 	
 	// Wait for reception
-	while(!(SPSR & (1<<SPIF)));	
-		
-	return SPDR;					
+	while(!(SPSR & (1<<SPIF)));											
+	return SPDR;														
 }
 
+
+//***************************************************************
+//	SPI Slave-Select											*
+//***************************************************************
 void SPI_select(void) {
 	// Set !SS to 0 to select slave
-	PORTB &= ~(1<<SPI_SS);		
+	PORTB &= ~(1<<SPI_SS);
 }
 
+
+//***************************************************************
+//	SPI Slave-Deselect											*
+//***************************************************************
 void SPI_deselect(void) {
 	// Set !SS to 1 to deselect slave
-	PORTB |= (1<<SPI_SS);		
+	PORTB |= (1<<SPI_SS);
 }

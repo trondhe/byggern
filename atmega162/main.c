@@ -36,14 +36,6 @@ int main()
 	system_logic_vars_init();
 	scoretimer_init();
 	
-	
-	// Music init
-	//DDRD |= (1 << PIND5);		//Set D5(OC1A) as output
-	//BUZZER_init();
-	//BUZZER_set_tempo(100);
-	//BUZZER_start(1);
-	//BUZZER_play_song();
-	
 	// Enable global interrupt
 	sei();
 

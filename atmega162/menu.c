@@ -10,6 +10,9 @@
 #include "adc.h"
 #include "system_logic.h"
 #include "setup.h"
+#include "pwm.h"
+#include "buzzer.h"
+#include "music.h"
 
 
 //***************************************************************
@@ -39,22 +42,29 @@ int* menu_state_ctrl_get(){
 //***************************************************************
 //	Menu actions												*
 //***************************************************************
+
+// PID based position control gamemode
 void play_gunmode() {
-	//if (sys_val->calibration_info == 0) {		// Checks if system is calibrated
+	sys_val->gamemode = 2;					// Set game mode
+	s_bit(sys_val->settings, SETT_JOY_GUN); // Set joystick mode
+
+	// Calibration code, seemingly not needed
+		//if (sys_val->calibration_info == 0) {		// Checks if system is calibrated
 		//settings_guncalibration();				// Set calibration mode
 		//} else {
 		//sys_val->gamemode = 2;					// Set game mode
 		//s_bit(sys_val->settings, SETT_JOY_GUN); // Set joystick mode
-	//}
-	sys_val->gamemode = 2;					// Set game mode
-	s_bit(sys_val->settings, SETT_JOY_GUN); // Set joystick mode
+		//}
+
 }
 
+// Speed based feed-forward control gamemode
 void play_joymode() {
 	sys_val->gamemode = 2;						// Set game mode	
 	c_bit(sys_val->settings, SETT_JOY_GUN);		// Set gun mode
 }
 
+// Calibration function, not needed, kept as backup
 void settings_guncalibration() {
 	sys_val->gamemode = 1;						// Set calibration mode
 	
@@ -72,6 +82,7 @@ void settings_guncalibration() {
 	_delay_ms(700);
 }
 
+// Sets the firemode of the solenoid, singlefire or automatic
 void settings_firemode(){
 	if(t_bit_h(sys_val->settings, SETT_SINGLE_AUTO)) {
 		c_bit(sys_val->settings, SETT_SINGLE_AUTO); // Set single fire mode
@@ -86,16 +97,25 @@ void settings_firemode(){
 	}
 }
 
+// Play some dank tunes
 void settings_playmusic() {
-	
+	 ////Music init
+	//DDRD |= (1 << PIND5);		//Set D5(OC1A) as output
+	//BUZZER_init();
+	//BUZZER_set_tempo(100);
+	//BUZZER_start(1);
+	//BUZZER_play_song();
 }
 
 
 //***************************************************************
 //	Menu node initiation functions								*
 //***************************************************************
+
+// Create node, adds the necessary pointer for childs and parent nodes. 
 node_t* menu_node_init(int num_childs, char* name, node_t* parent, void* action)
 {
+	// Allocate space on heap
 	node_t* node = (node_t*)malloc(sizeof(node_t));
 	if (node == NULL) {
 		for (int i = 0; i < strlen(name); i++){
@@ -105,6 +125,7 @@ node_t* menu_node_init(int num_childs, char* name, node_t* parent, void* action)
 		return NULL;
 	}
 	
+	// Initalize child count, parent node, and child nodes
 	node->node_chld_count = 0;
 	strcpy(node->node_name, name);
 	node->node_prnt = parent;
@@ -112,14 +133,19 @@ node_t* menu_node_init(int num_childs, char* name, node_t* parent, void* action)
 	for (int i = 0; i < num_childs; i++) {
 		node->node_chld[i] = NULL;
 	}
+
+	// Adds node to child of parent
 	if (parent != NULL) {
 		parent->node_chld[parent->node_chld_count] = node;
 		parent->node_chld_count++;
 	}
+
+	// Add function pointer for menu action 
 	node->action = action;
 	return node;
 }
 
+// Node structure
 node_t* menu_nodelist_init() {
 	//NODE TEMPLATE
 	// 	node_t* node_ = node_init(7, "", &node_, functionptr);
@@ -152,7 +178,6 @@ void menu_nav(node_t** node_current, joy_position* joy_pos) {
 	}
 	
 	// Menu control
-	//menuctrl = readJoystick();
 	if (menu_ctrl_hold == 0) {
 		switch (joy_pos->direction) {
 			case 8:	// Menu control direction: UP

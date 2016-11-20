@@ -6,14 +6,21 @@
 #include <util/delay.h>
 #include "pwm.h"
 
+
+//***************************************************************
+//	Initialization of PWM for speaker							*
+//***************************************************************
 void PWM_init(void) {
-	//Toggle OC1A (channel A) on compare match, use fast PWM, OCR1A used as TOP
+	//Toggle OC1A on compare match, use fast PWM, OCR1A used as TOP
 	TCCR1A |= (1 << COM1A0) | (1 << WGM11) | (1 << WGM10);
 	TCCR1A &= ~(1 << COM1A1);
 	TCCR1B |= (1 << WGM13) | (1 << WGM12);
 }
 
 
+//***************************************************************
+//	PWM music functions											*
+//***************************************************************
 void PWM_start(uint8_t start) {
 	if (start == 1) {
 		//Set the prescaler (clk/8)

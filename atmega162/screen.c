@@ -62,7 +62,7 @@ void screen_buffer_writemenu(node_t** node_current){
 	// Screen clear
 	screen_clear_buffer();
 	
-	// Write current node on top
+	// Write current node as header
 	screen_textcentering((**node_current).node_name, 0, 61);
 
 	// Write child nodes
@@ -85,15 +85,19 @@ void screen_buffer_writemenu(node_t** node_current){
 			buffer[i][0] = 32;
 		}
 	}
+
+	// Write highscore at bottom of screen
 	screen_writehighscore(5);
 }
 
+// Remnant of a not needed system, kept for future purposes
 void screen_buffer_writecalibrate(){
 
 	// Screen clear
 	screen_clear_buffer();
 }
 
+// Writes screen with score while in game
 void screen_buffer_writegame(){
 	screen_clear_buffer();
 	if ((sys_vals->settings == 1 | (sys_vals->settings == 0))) {
@@ -108,6 +112,7 @@ void screen_buffer_writegame(){
 	
 }
 
+// Writes endscreen to buffer
 void screen_buffer_writeend (int failtype) {
 	screen_clear_buffer();
 
@@ -126,18 +131,21 @@ void screen_buffer_writeend (int failtype) {
 	_delay_ms(1500);
 }
 
+// Write a splashscreen to buffer with two centered lines of text
 void screen_buffer_writesplash(char* string1, char* string2, int line1, int line2) {
 	screen_clear_buffer();
 	screen_textcentering(string1, line1, 32);
 	screen_textcentering(string2, line2, 32);
 }
 
+// Write score on line
 void screen_writescore(int line) {
 	char* score_container_tmp[get_int_len(sys_vals->score_counter)];
 	sprintf(score_container_tmp, "%d", sys_vals->score_counter);
 	screen_textcentering(score_container_tmp, line, 32);
 }
 
+// Write highscore on line+1 with splashtext on top
 void screen_writehighscore(int line) {
 	screen_textcentering("Highscore:", line, 32);
 	char* score_container_tmp[get_int_len(sys_vals->score_top)];
@@ -145,6 +153,7 @@ void screen_writehighscore(int line) {
 	screen_textcentering(score_container_tmp, line+1, 32);
 }
 
+// Centers string on line with possible fill
 void screen_textcentering(char* string, int row, char fill) {
 	int node_name_len = strlen(string);
 	int buffer_space_remaining = 16 - node_name_len;
@@ -162,6 +171,7 @@ void screen_textcentering(char* string, int row, char fill) {
 	}
 }
 
+// Resets the buffer to blank
 void screen_clear_buffer() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 16; j++) {
@@ -170,10 +180,12 @@ void screen_clear_buffer() {
 	}
 }
 
+// Prints the buffer to OLED
 void screen_oled_print_buffer() {
 	OLED_print_buffer(buffer);
 }
 
+// Gets length of int for use in textcentering
 int get_int_len (int value){
 	int l=1;
 	while(value>9){ l++; value/=10; }

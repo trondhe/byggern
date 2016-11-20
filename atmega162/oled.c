@@ -6,11 +6,18 @@
 #include "drawings.h"
 #include "8x8font.h"
 
+
+//***************************************************************
+//	OLED cmd and data adresses and vars init					*
+//***************************************************************
 volatile char *OLED_cmd = (char *) 0x1000;
 volatile char *OLED_data = (char *) 0x1200;
-
 uint8_t page, col;
 
+
+//***************************************************************
+//	OLED init													*
+//***************************************************************
 void oled_init()
 {
 	//Setup the OLED display
@@ -74,6 +81,10 @@ void oled_init()
 	OLED_home();
 }
 
+
+//***************************************************************
+//	OLED functions												*
+//***************************************************************
 void cmd_OLED(char cmd)
 {
 	*OLED_cmd = cmd;
@@ -82,6 +93,17 @@ void cmd_OLED(char cmd)
 void data_OLED(char data)
 {
 	*OLED_data = data;
+}
+
+// Main function for printing buffer to OLED
+void OLED_print_buffer(char** buffer){
+	OLED_home();
+	for (int i = 0; i < 8; i++){
+		OLED_goto_line(i);
+		for(int j = 0; j < 16; j++){
+			OLED_print_char(buffer[i][j]);
+		}
+	}
 }
 
 int OLED_print_char(char c) {
@@ -165,23 +187,3 @@ void OLED_ARROW(){
 		data_OLED(pgm_read_byte(&arrow[i]));
 	}
 }
-
-//void OLED_DICKBUTT(char** buffer){
-	////OLED_goto_line(line);
-	//for(int i = 0; i < 8; i++){
-		//for (int j = 0; j < 128; j++)
-			//buffer[i][] data_OLED(pgm_read_byte(&dickbutt[i][j]));
-	//}
-//}
-
-
-void OLED_print_buffer(char** buffer){
-	OLED_home();
-	for (int i = 0; i < 8; i++){
-		OLED_goto_line(i);
-		for(int j = 0; j < 16; j++){
-			OLED_print_char(buffer[i][j]);
-		}
-	}
-}
-
