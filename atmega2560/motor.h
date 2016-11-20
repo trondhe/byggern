@@ -9,7 +9,8 @@
 #define ENCODER_RESET		PH6
 #define ENCODER_SELECT		PH3
 
-uint8_t motor_control(int8_t xValue);
+
+void motor_control(int8_t speed);
 void motor_init();
 int16_t motor_encoder_read();
 void tune();
