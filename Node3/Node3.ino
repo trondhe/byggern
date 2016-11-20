@@ -27,10 +27,14 @@
 #define MCP_TXB0D0 0x36
 #define MCP_RTS_TX0 0x81
 #define MCP_CANINTF 0x2C
+#define MCP_CNF1    0x2A
+#define MCP_CNF2    0x29
+#define MCP_CNF3    0x28
 
 unsigned long startTime;
 unsigned long currentTime;
 const int pingPin = 7;
+const int gunPin = 5;
 unsigned long duration;
 unsigned int pingDuration;
 
@@ -53,6 +57,9 @@ void CAN_init(){
   McpInit();
   CAN_bitModify(MCP_RXB0CTRL,0x04, 0xFF);     // Rollover disable, mask/filter off      
   CAN_bitModify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL);   // Normal mode
+  //CAN_bitModify(MCP_CNF1, 0x00, 0x00);
+  //CAN_bitModify(MCP_CNF2, 0xF0, 0xF0);
+  //CAN_bitModify(MCP_CNF3, 0x86, 0x86);
   CAN_bitModify(MCP_CANINTE, 0x01, 1);          // Enable interrupt
 }
 
@@ -188,7 +195,7 @@ unsigned long ping () {
 void setup() {
   delay(10);
   Serial.begin(9600);
- 
+  pinMode(gunPin, INPUT_PULLUP);
   pinMode(13, OUTPUT);
   pinMode(12, INPUT);
   pinMode(11, OUTPUT);
@@ -215,6 +222,7 @@ void loop() {
     //Serial.println(pingDuration);
     CAN_message_send.data[0] = (pingDuration >> 8);
     CAN_message_send.data[1] = pingDuration;
+    CAN_message_send.data[2] = digitalRead(gunPin);
   
     CAN_byte_send(&CAN_message_send);
   }
