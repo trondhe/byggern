@@ -66,7 +66,7 @@ int main(void)
 	int servo_angle = 2000;
 	CAN_message_t* CAN_message_recieve = CAN_message_pass2main();
 	CAN_message_t CAN_message_send;
-	CAN_message_send.id = 3;
+	CAN_message_send.id = 30;
 	CAN_message_send.length = 8;
 	PID_control* p = pid_control_init();
 	sys_val_t sys_vals = {.mode=0, .settings=0, .calibration_info=0};
@@ -80,7 +80,7 @@ int main(void)
 	// testing variables
 	int k; // IR: 1 if obstructed, 0 if nothing, -1 neutral
 	int16_t counter = 0;
-	uint16_t ir, shoot;
+	uint16_t shoot;
 	int8_t solenoid;
 	int8_t x_pos;
 	int8_t y_pos;
@@ -90,6 +90,7 @@ int main(void)
 	int16_t ping_pos_right;
 	int16_t ping_pos_over_motor;
 	int calibration_stage = 0;
+	uint8_t ir;
 	
 
 	int16_t u; // Pådrag
@@ -104,10 +105,12 @@ int main(void)
     while(1)
     {
 		shootVal = adc_read(6);
-		ir = adc_read(0);
+		//ir = adc_read(0);
 
-		//CAN_message_send.data[1] = sys_vals.calibration_info;
-		//CAN_byte_send(&CAN_message_send);
+		CAN_message_send.data[1] = sys_vals.calibration_info;
+		ir = ir_obstructed();
+		CAN_message_send.data[0] = ir;
+		CAN_byte_send(&CAN_message_send);
 						
 		
 		if(CAN_message_recieve->id == 1)
@@ -121,10 +124,10 @@ int main(void)
 			
 			ping = CAN_message_recieve->data[0] << 8;
 			ping |= CAN_message_recieve->data[1];
-			printf("%d\n",ping);
+			//printf("%d\n",ping);
 			
 			gunVal = CAN_message_recieve->data[2];
-			printf("CAN: %d\n",CAN_message_recieve->id);
+			//printf("Gun: %d\n",gunVal);
 			
 			
 		}
@@ -136,7 +139,7 @@ int main(void)
 			solenoid = CAN_message_recieve->data[2];			
 			y_pos = CAN_message_recieve->data[1];
 			x_pos = CAN_message_recieve->data[0];
-			printf("CAN: %d Mode: %d Settings: %d x_pos: %d\n",CAN_message_recieve->id,sys_vals.mode,sys_vals.settings,x_pos);
+			//printf("CAN: %d Mode: %d Settings: %d x_pos: %d\n",CAN_message_recieve->id,sys_vals.mode,sys_vals.settings,x_pos);
 		}
 
 		else
@@ -146,10 +149,10 @@ int main(void)
 		//sys_vals.settings = 1;
 		//printf("%d\n",shootVal);
 		//printf("CAN: %d Mode: %d Settings: %d x_pos: %d\n",CAN_message_recieve->id,sys_vals.mode,sys_vals.settings,x_pos);
-		sys_vals.mode = 2;
-		sys_vals.settings = 2;
+		//sys_vals.mode = 2;
+		//sys_vals.settings = 1;
 		switch(sys_vals.mode){
-			printf("penis\n");
+			//printf("penis\n");
 			case 0:		// MENU
 			motor_control(0);
 			servo_set_angle(0);
@@ -251,11 +254,6 @@ int main(void)
 				}
 				break;
 		}
-		
-		
-		// IR Reciever
-		k = ir_obstructed(); 
-				
 		
 		// Unfinished stuff
 		enc_value = motor_encoder_read();

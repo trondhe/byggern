@@ -15,11 +15,11 @@ void ir_obstructThreshold(uint16_t t){
 uint8_t ir_obstructed(void){
 	#define FILTER_ORDER 4
 	#if FILTER_ORDER == 1
-	return adc_read(4) < obstr_thresh;
+	return adc_read(0) < obstr_thresh;
 	#else
 	static uint16_t filter[FILTER_ORDER-1];
 
-	uint16_t val = adc_read(4);
+	uint16_t val = adc_read(0);
 	uint16_t avg = val;
 
 	for(uint8_t i = 0; i < FILTER_ORDER-2; i++){
