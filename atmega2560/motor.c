@@ -79,10 +79,10 @@ void motor_encoder_calibrate() {
 	PORTH |= (1 << ENCODER_RESET);
 }
 
-uint8_t motor_control(int8_t speed){
-
-	unsigned char motorInput = abs(speed);
+void motor_control(int8_t speed){
 	
+	uint8_t motorInput = abs(speed);
+	//printf("Motor input : %d", speed);
 	// Set motor direction
 	if (speed > 0) {			
 		PORTH |= (1 << PH1);	// Motor goes RIGHT

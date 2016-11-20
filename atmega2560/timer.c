@@ -6,7 +6,7 @@
 uint16_t volatile static t=0;
 
 void start_timer(void){
-	TCCR5B |= (1 << CS50) | (1 << CS52);			// Prescaler set to 1024
+	TCCR5B |= (1 << CS52) | (1 << CS50);			// Prescaler set to 1024
 }
 
 void stop_timer(void){
@@ -15,10 +15,10 @@ void stop_timer(void){
 }
 
 uint16_t acquire_time(){
-	return TCNT5L;
+	return TCNT5;
 }
 
 void reset_timer(void){
-	t=0;
+	TCNT5 = 0;
 }
 

@@ -9,20 +9,18 @@ void solenoid_init(){
 	PORTL	|= (1 << PL0);		
 }
 
-void solenoid_trigger(int trigger, int triggerVal){
-	if (trigger == 0 || adc_read(6) < triggerVal) {
+void solenoid_trigger(int trigger, int gunVal){
+	if (trigger == 1 || gunVal == 0) {
 		PORTL &=~(1 << PL0);
-		printf("SHOOT!\n");
 	} else {
 		PORTL |= (1 << PL0);
 	}
 }
 
-void solenoid_toggle(int trigger, int triggerVal){
-	if (trigger == 0 || adc_read(6) < triggerVal)
+void solenoid_toggle(int trigger, int gunVal){
+	if (trigger == 1 || gunVal == 0)
 	{
 		PORTL &=~(1 << PL0);
-		printf("SHOOT!\n");
 		_delay_ms(50);
 		PORTL |= (1 << PL0);
 		_delay_ms(50);

@@ -17,7 +17,10 @@ CAN_message_t* CAN_message_pass2main(){
 void CAN_init(){
 	McpInit();
 	CAN_bitModify(MCP_RXB0CTRL,0b00000100, 0xFF);			// Rollover disable, mask/filter off			
-	CAN_bitModify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL);		// Loopback mode
+	CAN_bitModify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL);		// 
+	CAN_bitModify(MCP_CNF1, 0x00, 0x00);	
+	CAN_bitModify(MCP_CNF2, 0xF0, 0xF0);
+	CAN_bitModify(MCP_CNF3, 0x86, 0x86);
 	CAN_bitModify(MCP_CANINTE, 0x01, 1);					// Enable interrupt
 }
 
