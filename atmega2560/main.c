@@ -106,32 +106,31 @@ int main(void)
 		shootVal = adc_read(6);
 		ir = adc_read(0);
 
-		CAN_message_send.data[1] = 9;//sys_vals.calibration_info;
-		CAN_byte_send(&CAN_message_send);
+		//CAN_message_send.data[1] = sys_vals.calibration_info;
+		//CAN_byte_send(&CAN_message_send);
 						
 		
-		if(CAN_message_recieve->id == 776)
+		if(CAN_message_recieve->id == 1)
 		{
 			
-			ping = CAN_message_recieve->data[0];
+			//ping = CAN_message_recieve->data[0];
+
+			//ping = CAN_message_recieve->data[1];
 			//printf(byte_to_binary(ping));
-			//printf("\t");
-			ping = CAN_message_recieve->data[1];
-			//printf(byte_to_binary(ping));
-			//printf("\n");
+			
 			
 			ping = CAN_message_recieve->data[0] << 8;
 			ping |= CAN_message_recieve->data[1];
+			printf("%d\n",ping);
 			
 			gunVal = CAN_message_recieve->data[2];
-			
+			printf("CAN: %d\n",CAN_message_recieve->id);
 			
 			
 		}
 		
 		else if(CAN_message_recieve->id == 50)
 		{	
-			
 			sys_vals.mode = CAN_message_recieve->data[3];					// Receive mode byte from CAN
 			sys_vals.settings = CAN_message_recieve->data[4];				// Receive options byte from CAN
 			solenoid = CAN_message_recieve->data[2];			
@@ -146,8 +145,11 @@ int main(void)
 		}
 		//sys_vals.settings = 1;
 		//printf("%d\n",shootVal);
-		
+		//printf("CAN: %d Mode: %d Settings: %d x_pos: %d\n",CAN_message_recieve->id,sys_vals.mode,sys_vals.settings,x_pos);
+		sys_vals.mode = 2;
+		sys_vals.settings = 2;
 		switch(sys_vals.mode){
+			printf("penis\n");
 			case 0:		// MENU
 			motor_control(0);
 			servo_set_angle(0);
@@ -199,9 +201,10 @@ int main(void)
 				printf("Motor: %d\n",ping_pos_over_motor);
 			break;
 			
+			
 			case 2:		// GAME MODE
 				switch(sys_vals.settings){
-
+					printf("In game mode\n");
 					case 0:		// Joystick movements with single-shot
 						//printf("Joystick with single-shot\t");
 						solenoid_trigger(solenoid,gunVal);	// Control solenoid
