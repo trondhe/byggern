@@ -16,52 +16,73 @@
 
 static joy_position joy_pos;
 node_t* node_current = NULL;
-char** buffer = NULL;
 int CAN_data[8];
 CAN_message_t* CAN_message_recieve_ptr;
-sys_val_t sys_vals;
-
-void system_logic_vars_init(){
-	node_current = menu_nodelist_init();
-	buffer = screen_buffer_init();
-	screen_vals_init();
-	menu_vals_init();
-	sys_vals.calibration_info = 0; // Initialize motor uncalibrated
-	CAN_message_recieve_ptr = CAN_message_recieve_get();
-}
+sys_val_t sys_vals = {.calibration_info = 0, .score_counter = 0, .score_top = 0};
+int score_overflow_counter = 0;
 
 sys_val_t* sys_vals_get(){
 	return &sys_vals;
 }
 
+void system_logic_vars_init(){
+	node_current = menu_nodelist_init();
+	screen_buffer_init();
+	screen_vals_init();
+	menu_vals_init();
+	CAN_message_recieve_ptr = CAN_message_recieve_get();
+}
 
 void system_loop() {
-	
+
+	// Game escape
+	if ((sys_vals.gamemode == 2) & (t_bit_l(PINB, PB1))) { // Checks switch sw1 on malfunctionboard
+		sys_vals.gamemode = 0;
+		screen_buffer_writeend(0);
+		sys_vals.score_counter = 0;
+	}
+	// Game failstate
+	if ((sys_vals.gamemode == 2) & (sys_vals.IR_status == 1)) {
+		screen_buffer_writeend (1);
+		sys_vals.gamemode = 0;
+		sys_vals.score_counter = 0;
+	}
+
 	// Joystick position update
 	joy_pos = readJoystick();
 
-	switch (sys_vals.mode) {
+
+	switch (sys_vals.gamemode) {
 		case 0: // Gamemode: Menu
-		menu_nav(&node_current, &joy_pos);
-		screen_buffer_writemenu(buffer, &node_current);
+			menu_nav(&node_current, &joy_pos);
+			screen_buffer_writemenu(&node_current);
+			screen_oled_print_buffer();
 		break;
 		
 		case 1: // Gamemode: Calibration
-		screen_buffer_writecalibrate(buffer, &node_current);
+			settings_guncalibration();
 		break;
+
 		case 2: // Gamemode: Game
-		screen_buffer_writegame(buffer);
+			screen_buffer_writegame();
+			screen_oled_print_buffer();
 		break;
 	}
 	
 	CAN_data[0] = joy_pos.x;
 	CAN_data[1] = joy_pos.y;
-	CAN_data[2] = PINB;
-	CAN_data[3] = sys_vals.mode;
+	CAN_data[2] = (~(PINB) & (1 << PB0));
+	CAN_data[3] = sys_vals.gamemode;
 	CAN_data[4] = sys_vals.settings;
 	CAN_message_transmitt(CAN_data);
-	
-	//printf("%d\n",CAN_message_recieve_ptr->id);
-	//printf("\nNONE\n\n");
+}
 
+ISR(TIMER1_OVF_vect) {
+	if(sys_vals.gamemode == 2) {
+		score_overflow_counter++;
+		if (score_overflow_counter > 30) {
+			sys_vals.score_counter++;
+			score_overflow_counter = 0;
+		}
+	}
 }

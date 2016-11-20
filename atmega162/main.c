@@ -34,6 +34,7 @@ int main()
 	CAN_init();
 	mfcard_io_init();
 	system_logic_vars_init();
+	scoretimer_init();
 	
 	
 	// Music init
@@ -47,7 +48,7 @@ int main()
 	sei();
 
 	while(1){
-	
+
 		//ADC_debug();
 		system_loop();
 	}

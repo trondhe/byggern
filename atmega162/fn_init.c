@@ -18,3 +18,9 @@ void mfcard_io_init() {
 	DDRB  &= ~((1<<DDB0)|(1<<DDB1));	// Enable digital inputs from malfunctionboard, active low
 	PORTB |= (1<<PB0)|(1<<PB1);		// Enable pull up resistor, active low on digital input
 }
+
+void scoretimer_init() {
+	TCCR1B |= (1<<CS10);	// 16-bit timer with no prescaler
+	TCNT1 = 0;
+	TIMSK |= (1<<TOIE1);	// Timer overflow interrupt enable
+}

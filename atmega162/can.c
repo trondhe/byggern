@@ -12,9 +12,11 @@
 #include "can.h"
 #include "setup.h"
 #include "uart.h"
+#include "system_logic.h"
 
-CAN_message_t CAN_message_recieve;
-CAN_message_t CAN_message_send;
+volatile static CAN_message_t CAN_message_recieve;
+static CAN_message_t CAN_message_send;
+sys_val_t* sys_vals_ptr;
 
 CAN_message_t* CAN_message_recieve_get(){
 	return &CAN_message_recieve;
@@ -31,9 +33,13 @@ void CAN_init(){
 	McpInit();
 	CAN_bitModify(MCP_RXB0CTRL,0b00000100, 0xFF);			// Rollover disable, mask/filter off
 	CAN_bitModify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL);		// Loopback mode
-	CAN_bitModify(MCP_CANINTE, 0x01, 1);					// Enable interrupt
-	CAN_message_send.id = 2;
+ 	CAN_bitModify(MCP_CANINTE, 0x01, 1);					// Enable interrupt
+	CAN_bitModify(MCP_CNF1, 0x00, 0x00);
+	CAN_bitModify(MCP_CNF2, 0xF0, 0xF0);
+	CAN_bitModify(MCP_CNF3, 0x86, 0x86);
+	CAN_message_send.id = 50;
 	CAN_message_send.length = 8;
+	sys_vals_ptr = sys_vals_get();
 }
 
 int CAN_error(void) {
@@ -86,7 +92,23 @@ void CAN_data_receive() {
 	CAN_bitModify(MCP_CANINTF, 0x01, 0);	// Clear interrupt
 }
 
+void CAN_sys_vals_autoupdate(){
+	if(CAN_message_recieve.id == 30){
+		sys_vals_ptr->IR_status = CAN_message_recieve.data[0];
+		sys_vals_ptr->calibration_info = CAN_message_recieve.data[1];
+	}
+}
 
 ISR(INT0_vect){
 	CAN_data_receive();
+	CAN_sys_vals_autoupdate();
+	//if(CAN_message_recieve.id == 30) {
+		//UART_print_char("IR LED: ");
+		//UART_print_int(CAN_message_recieve.data[0]);
+		//UART_print_char("\n");
+		//} else {
+		//UART_print_char("unknown id: ");
+		//UART_print_int(CAN_message_recieve.id);
+		//UART_print_char("\n");
+	//}
 }

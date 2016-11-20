@@ -35,6 +35,24 @@ void UART_Transmit(unsigned char data) {
 	UDR0 = data;
 }
 
+void UART_print_char(char* data) {
+	for (int i = 0; i < strlen(data); i++) {
+		while (!( UCSR0A & (1<<UDRE0)));
+		// Put data into buffer, sends the data
+		UDR0 = data[i];
+	}
+}
+
+void UART_print_int(uint16_t data) {
+	char str[15];
+	sprintf(str, "%d", data);
+	for (int i = 0; i < strlen(str); i++) {
+		while (!( UCSR0A & (1<<UDRE0)));
+		// Put data into buffer, sends the data
+		UDR0 = str[i];
+	}
+}
+
 // Byte to char* conversion
 const char* byte_to_binary(int x)
 {

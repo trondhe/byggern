@@ -5,6 +5,8 @@
 #include <avr/io.h>
 #include "uart.h"
 
+#define JOYSTICK_DIGITAL_TRESH 95
+
 typedef enum{
 	JOYSTICK_Y  = 5,
 	JOYSTICK_X  = 4,

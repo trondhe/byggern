@@ -36,20 +36,20 @@ joy_position readJoystick(){
 	position.x = (int)(200*((((float)JoystickX()) / 255.0) - 0.5025));
 	position.y = (int)(200*((((float)JoystickY()) / 255.0) - 0.5025));
 	
-	if (abs(position.x) > 90 || abs(position.y) > 90){
+	if (abs(position.x) > JOYSTICK_DIGITAL_TRESH || abs(position.y) > JOYSTICK_DIGITAL_TRESH){
 		
-		if(position.x > 90){
+		if(position.x > JOYSTICK_DIGITAL_TRESH){
 			position.direction = 6;
 		}
 		
-		else if(position.x < -90){
+		else if(position.x < -JOYSTICK_DIGITAL_TRESH){
 			position.direction = 4;
 		}
 		
-		else if(position.y > 90){
+		else if(position.y > JOYSTICK_DIGITAL_TRESH){
 			position.direction = 8;
 		}
-		else if(position.y < 90){
+		else if(position.y < JOYSTICK_DIGITAL_TRESH){
 			position.direction = 2;
 		}
 	}

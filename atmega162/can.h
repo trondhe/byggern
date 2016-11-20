@@ -9,7 +9,7 @@
 typedef struct CAN_message_t{
 	int id;
 	uint8_t length;
-	int8_t data[8];
+	uint8_t data[8];
 } CAN_message_t;
 
 
@@ -19,4 +19,5 @@ void CAN_init();
 int CAN_error(void);
 void CAN_byte_send(CAN_message_t* message);
 void CAN_data_receive();
+void CAN_sys_vals_autoupdate();
 ISR(INT0_vect);
