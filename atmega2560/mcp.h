@@ -3,7 +3,7 @@
 
 #include <avr/io.h>
 
-void McpInit();
+void mcp_init();
 uint8_t CAN_read(uint8_t address);
 void CAN_write(uint8_t address, uint8_t data);
 void CAN_reset();

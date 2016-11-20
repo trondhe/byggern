@@ -8,30 +8,38 @@
 #include "uart.h"
 
 
-
-int16_t prev_error = 0;
-
+//***************************************************************
+//	Initilization of motor and encoder							*
+//***************************************************************
 void motor_init(){
-	// Sets DDR on motor pins
-	DDRH |= (1 << MOTOR_DIRECTION)|			// DIR  Motor direction
-			(1 << MOTOR_ENABLE);			// EN   Motor enable
+	// Set data direction as output on motor pins
+	DDRH |= (1 << MOTOR_DIRECTION)|			
+			(1 << MOTOR_ENABLE);			
 	
-	// Sets DDR on encoder pins  
-	DDRH |= (1 << ENCODER_ACTIVE_LOW)|		// !OE  Encoder active low
-			(1 << ENCODER_RESET)|			// !RST Encoder reset active low
-			(1 << ENCODER_SELECT);			// SEL  Encoder select
+	// Set data direction as output on encoder pins 
+	DDRH |= (1 << ENCODER_ACTIVE_LOW)|		
+			(1 << ENCODER_RESET)|			
+			(1 << ENCODER_SELECT);			
 	
-	//Set PORTK to input
+	// Set PORTK as inputs
 	DDRK = 0x00;
 
-	// Enables motor
+	// Enable motor
 	PORTH |= (1 << MOTOR_ENABLE);
 	
-	// Disable reset
+	// Reset encoder and disable reset
+	PORTH &= ~(1 << ENCODER_RESET);
+	_delay_ms(10);
 	PORTH |= (1 << ENCODER_RESET);
 }
 
+
+//***************************************************************
+//	Read position from encoder									*
+//***************************************************************
 int16_t motor_encoder_read(){
+	
+	// Initialize encoder with 0
 	uint16_t encodervalue = 0x0000;
 		
 	// Enable encoder output
@@ -39,14 +47,14 @@ int16_t motor_encoder_read(){
 
 	// Set SEL low, MSB on MJ2
 	PORTH &= ~(1 << ENCODER_SELECT);
-	_delay_us(20); // 20µs pause
+	_delay_us(20);
 	
 	// Read MSB
 	uint8_t MSB = PINK;
 
 	// Set SEL high, LSB on MJ2
 	PORTH |= (1 << ENCODER_SELECT);
-	_delay_us(20); // 20µs pause
+	_delay_us(20); 
 	
 	// Read LSB
 	uint8_t LSB = PINK;
@@ -54,35 +62,20 @@ int16_t motor_encoder_read(){
 	// Disable encoder output
 	PORTH |= (1 << ENCODER_ACTIVE_LOW);
 
-	// Encodervalue = MSB LSB
+	// Encodervalue consist of an int16 with MSB and LSB
 	encodervalue = ((MSB << 8) | LSB);
-	
-	//Binary encoder value print for debugging
-	//motor_encoder_debug(MSB, LSB);
-	
+
 	return encodervalue;
 }
 
-void motor_encoder_calibrate() {
-	// ITS MAGIC
-	UART_print_char("\n1");
-	_delay_ms(3000);
-	UART_print_char("\n2");
-	motor_control(-100);
-	_delay_ms(3000);
-	UART_print_char("\n3");
-	motor_control(10);
-	_delay_ms(600);
-	UART_print_char("\n4");
-	PORTH &= ~(1 << ENCODER_RESET);
-	_delay_ms(10);
-	PORTH |= (1 << ENCODER_RESET);
-}
 
+//***************************************************************
+//	Send motor speed command and direction						*
+//***************************************************************
 void motor_control(int8_t speed){
 	
 	uint8_t motorInput = abs(speed);
-	//printf("Motor input : %d", speed);
+
 	// Set motor direction
 	if (speed > 0) {			
 		PORTH |= (1 << PH1);	// Motor goes RIGHT
@@ -94,7 +87,13 @@ void motor_control(int8_t speed){
 	DAC_write(motorInput);	
 }
 
+
+//***************************************************************
+//	Encoder debugging											*
+//***************************************************************
 void motor_encoder_debug(uint8_t MSB, uint8_t LSB){
+	
+	// Write encoder values as binary
 	UART_print_char("\n");
 	UART_print_char(byte_to_binary(MSB));
 	UART_print_char("\t");

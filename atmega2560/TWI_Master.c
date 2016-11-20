@@ -1,27 +1,3 @@
-/*****************************************************************************
-*
-* Atmel Corporation
-*
-* File              : TWI_Master.c
-* Compiler          : IAR EWAAVR 2.28a/3.10c
-* Revision          : $Revision: 1.13 $
-* Date              : $Date: 24. mai 2004 11:31:20 $
-* Updated by        : $Author: ltwa $
-*
-* Support mail      : avr@atmel.com
-*
-* Supported devices : All devices with a TWI module can be used.
-*                     The example is written for the ATmega16
-*
-* AppNote           : AVR315 - TWI Master Implementation
-*
-* Description       : This is a sample driver for the TWI hardware modules.
-*                     It is interrupt driveren. All functionality is controlled through
-*                     passing information to and from functions. Se main.c for samples
-*                     of how to use the driver.
-*
-*
-****************************************************************************/
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "TWI_Master.h"

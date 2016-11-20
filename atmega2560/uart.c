@@ -4,8 +4,13 @@
 
 FILE *mystdio;
 
+
+//***************************************************************
+//	Initilization for UART										*
+//***************************************************************
 void UART_Init(unsigned int ubrr) {
-	// Set baud rate */
+	
+	// Set baud rate 
 	UBRR0H = (unsigned char)(ubrr>>8);
 	UBRR0L = (unsigned char)ubrr;
 	
@@ -19,7 +24,12 @@ void UART_Init(unsigned int ubrr) {
 	mystdio = fdevopen(&UART_Transmit,&UART_Receive);
 }
 
+
+//***************************************************************
+//	Receive data from UART										*
+//***************************************************************
 unsigned char UART_Receive(void) {
+	
 	// Wait for data to be received 
 	while (!(UCSR0A & (1<<RXC0)));
 	
@@ -27,7 +37,12 @@ unsigned char UART_Receive(void) {
 	return UDR0;
 }
 
+
+//***************************************************************
+//	Transmit data via UART										*
+//***************************************************************
 void UART_Transmit(unsigned char data) {
+	
 	// Wait for empty transmit buffer 
 	while (!( UCSR0A & (1<<UDRE0)));
 	
@@ -35,20 +50,26 @@ void UART_Transmit(unsigned char data) {
 	UDR0 = data;
 }
 
+
+//***************************************************************
+//	Print strings via UART												*
+//***************************************************************
 void UART_print_char(char* data) {
 	for (int i = 0; i < strlen(data); i++) {
 			while (!( UCSR0A & (1<<UDRE0)));
-			// Put data into buffer, sends the data
 			UDR0 = data[i];
 	}
 }
 
+
+//***************************************************************
+//	Print integers via UART													*
+//***************************************************************
 void UART_print_int(uint16_t data) {
 	char str[15];
 	sprintf(str, "%d", data);
 	for (int i = 0; i < strlen(str); i++) {
 		while (!( UCSR0A & (1<<UDRE0)));
-		// Put data into buffer, sends the data
 		UDR0 = str[i];
 	}
 }
